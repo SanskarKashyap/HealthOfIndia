@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health of India — Search Anxiety vs. Clinical Reality</title>
+  <meta name="description" content="An interactive, scrollytelling analysis of India's health searches (Google Trends) vs. actual clinical outcomes (NFHS-5) across states and districts.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header Section with Global Dropdowns -->
+  <header>
+    <a href="#" class="logo" id="logo">
+      <div class="logo-icon"></div>
+      <span class="logo-text">Health of India</span>
+    </a>
+    <div class="controls">
+      <!-- Global Health Condition Selector -->
+      <div class="select-wrapper">
+        <select id="condition-selector" aria-label="Select Health Condition">
+          <option value="cancer">Cancer</option>
+          <option value="heart">Heart Disease</option>
+          <option value="diabetes">Diabetes</option>
+          <option value="obesity">Obesity</option>
+          <option value="depression">Depression</option>
+          <option value="tb">Tuberculosis</option>
+          <option value="baldness">Baldness / Hair Loss 🪒</option>
+          <option value="dengue">Dengue</option>
+        </select>
+      </div>
+      
+      <!-- Global State Filter -->
+      <div class="select-wrapper">
+        <select id="state-selector" aria-label="Filter by State">
+          <option value="all">All India (States)</option>
+          <!-- Rest of the states will be populated dynamically -->
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">A National Data Exploration</div>
+      <h1>Searching for <br><span class="text-gradient-rainbow">Swasthya</span></h1>
+      <p>How does the medical anxiety of 1.4 billion people on Google search align with the actual clinical reality of India's health burden?</p>
+      <div class="scroll-indicator">Scroll to Explore</div>
+    </div>
+  </section>
+
+  <!-- Main Scrollytelling Section -->
+  <section class="scrolly-container" id="scrolly-section">
+    <div class="scrolly-wrapper">
+      
+      <!-- Left Sticky Vis Panel -->
+      <div class="vis-panel">
+        <div class="vis-container" id="vis-container">
+          <!-- Active D3 visualizations will render here dynamically -->
+        </div>
+      </div>
+      
+      <!-- Right Scrolling Narrative Panel -->
+      <div class="narrative-panel">
+        
+        <!-- Step 1: National Time Series -->
+        <div class="step active" data-step="1">
+          <div class="step-card">
+            <div class="step-num">Step 1 — Search Anxiety over Time</div>
+            <h3>Public Query Patterns</h3>
+            <p>Google Search is a private mirror of our public anxieties. By looking at search interest over the last 24 months, we can track exactly when and how much interest spikes for different health concerns.</p>
+            <p id="time-series-narrative">Select a condition above to see national weekly and monthly trend variations. Notice seasonal spikes (like Dengue during the monsoon) versus chronic steady lines (like Diabetes and Hair Loss).</p>
+          </div>
+        </div>
+        
+        <!-- Step 2: State-level Search Map -->
+        <div class="step" data-step="2">
+          <div class="step-card">
+            <div class="step-num">Step 2 — Search Intensity by State</div>
+            <h3>Where is the Concern?</h3>
+            <p>Geographical search interest (normalized to a 0–100 scale) shows where people search for this condition the most. High values don't represent absolute counts, but rather the proportion of total searches originating from that state.</p>
+            <p id="search-map-narrative">States colored in deep green show high query concentrations. Urban hubs and highly literate states generally show a significantly higher search frequency.</p>
+          </div>
+        </div>
+        
+        <!-- Step 3: District-level Health Map -->
+        <div class="step" data-step="3">
+          <div class="step-card">
+            <div class="step-num">Step 3 — Clinical Outcomes Map</div>
+            <h3>What does the Data Say?</h3>
+            <p>We map this against the National Family Health Survey (NFHS-5) and related health reports. This represents the actual, clinical footprint of the condition at the granular district level (~641 administrative units).</p>
+            <p id="health-map-narrative">Deep blue shades show higher disease burdens or clinical risk. In some areas, the burden is heavily concentrated in rural communities, while in others, it is an urban epidemic.</p>
+          </div>
+        </div>
+        
+        <!-- Step 4: Synced Side-by-Side maps -->
+        <div class="step" data-step="4">
+          <div class="step-card">
+            <div class="step-num">Step 4 — Syncing Search & Reality</div>
+            <h3>Interactive Correlation</h3>
+            <p>Hover on any state or district in either map. The matching unit in the corresponding map will highlight simultaneously, with tools showing their comparison.</p>
+            <p id="synced-map-narrative">Observe the visual overlay. If search patterns matched reality, the dark green regions on the left would perfectly line up with the dark blue regions on the right. Frequently, they do not.</p>
+          </div>
+        </div>
+        
+        <!-- Step 5: Scatter Plot -->
+        <div class="step" data-step="5">
+          <div class="step-card">
+            <div class="step-num">Step 5 — The Gap Scatter Plot</div>
+            <h3>Quantifying the Disconnect</h3>
+            <p>By plotting search interest (X-axis) against actual health outcomes (Y-axis), we can statistically visualize the mismatch. States in the top-left have high disease burden but low search interest; states in the bottom-right search intensely despite lower clinical burden.</p>
+            <div class="legend-labels" style="margin-top: 10px;">
+              <span>X: Search Interest (0-100)</span>
+              <span>Y: Health Reality</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 6: Outliers Focus -->
+        <div class="step" data-step="6">
+          <div class="step-card">
+            <div class="step-num">Step 6 — Identifying Key Outliers</div>
+            <h3>Notable Mismatches</h3>
+            <p>Let's look at the state-level outliers. In India, factors like language barriers, internet access, urbanization, and medical stigma create dramatic gaps:</p>
+            <div id="outliers-container">
+              <!-- Outliers table or content will be injected here -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 7: Grid View -->
+        <div class="step" data-step="7">
+          <div class="step-card">
+            <div class="step-num">Step 7 — The National Matrix</div>
+            <h3>The Full Landscape</h3>
+            <p>To conclude our storytelling, we display all conditions simultaneously. This grid highlights the broad contrast between highly stigmatized conditions, lifestyle concerns, and seasonal outbreaks.</p>
+            <p>Hover over the grid cards to view specific conditions instantly in the main workspace.</p>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- Tooltip Element -->
+  <div id="map-tooltip" class="tooltip"></div>
+
+  <!-- Footer Credits and Methodology -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">Health of India</div>
+      <p class="footer-desc">This project is an interactive data visualization exploring the gap between what Indians search for on the internet versus what is recorded in clinical health surveys. Search interest is compiled from Google Trends (2024-2025). Clinical outcome data is sourced from the National Family Health Survey (NFHS-5, 2019-2021) and the India State-Level Disease Burden Initiative.</p>
+      <div class="footer-credits">
+        <p>Built with Pure D3.js & HTML5/CSS3. Administrative boundaries courtesy of Survey of India and BharatLabs.</p>
+        <p style="margin-top: 8px;">&copy; 2026. Dedicated to public health awareness in India.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- D3.js and TopoJSON CDN Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
+  
+  <!-- Main Application Script (ES6 Modules) -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
