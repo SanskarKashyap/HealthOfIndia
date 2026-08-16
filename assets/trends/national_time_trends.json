@@ -1,0 +1,786 @@
+{
+  "cancer": [
+    {
+      "date": "Jan 2024",
+      "interest": 38
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 41
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 37
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 39
+    },
+    {
+      "date": "May 2024",
+      "interest": 35
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 31
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 32
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 32
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 28
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 31
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 31
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 28
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 32
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 34
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 37
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 37
+    },
+    {
+      "date": "May 2025",
+      "interest": 44
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 42
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 46
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 43
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 41
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 43
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 40
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 43
+    }
+  ],
+  "heart": [
+    {
+      "date": "Jan 2024",
+      "interest": 59
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 57
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 51
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 54
+    },
+    {
+      "date": "May 2024",
+      "interest": 53
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 51
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 57
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 52
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 54
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 53
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 49
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 49
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 51
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 50
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 50
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 48
+    },
+    {
+      "date": "May 2025",
+      "interest": 50
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 47
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 45
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 45
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 47
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 49
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 50
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 53
+    }
+  ],
+  "diabetes": [
+    {
+      "date": "Jan 2024",
+      "interest": 67
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 70
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 70
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 66
+    },
+    {
+      "date": "May 2024",
+      "interest": 64
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 66
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 66
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 68
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 66
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 68
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 66
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 64
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 65
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 66
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 68
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 65
+    },
+    {
+      "date": "May 2025",
+      "interest": 66
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 68
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 66
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 70
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 67
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 65
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 66
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 68
+    }
+  ],
+  "obesity": [
+    {
+      "date": "Jan 2024",
+      "interest": 54
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 54
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 53
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 54
+    },
+    {
+      "date": "May 2024",
+      "interest": 56
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 56
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 54
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 53
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 54
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 51
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 56
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 58
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 58
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 55
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 59
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 60
+    },
+    {
+      "date": "May 2025",
+      "interest": 55
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 58
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 57
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 58
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 61
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 59
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 60
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 63
+    }
+  ],
+  "depression": [
+    {
+      "date": "Jan 2024",
+      "interest": 47
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 53
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 50
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 53
+    },
+    {
+      "date": "May 2024",
+      "interest": 54
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 54
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 49
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 48
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 51
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 55
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 57
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 58
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 58
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 56
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 52
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 59
+    },
+    {
+      "date": "May 2025",
+      "interest": 55
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 56
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 57
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 52
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 55
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 52
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 48
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 53
+    }
+  ],
+  "tb": [
+    {
+      "date": "Jan 2024",
+      "interest": 47
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 45
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 45
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 46
+    },
+    {
+      "date": "May 2024",
+      "interest": 46
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 42
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 43
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 44
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 45
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 48
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 51
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 52
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 50
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 50
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 51
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 49
+    },
+    {
+      "date": "May 2025",
+      "interest": 51
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 53
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 54
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 56
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 60
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 54
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 54
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 55
+    }
+  ],
+  "baldness": [
+    {
+      "date": "Jan 2024",
+      "interest": 51
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 50
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 52
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 54
+    },
+    {
+      "date": "May 2024",
+      "interest": 47
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 49
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 62
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 64
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 63
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 55
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 56
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 48
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 50
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 53
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 49
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 54
+    },
+    {
+      "date": "May 2025",
+      "interest": 54
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 55
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 71
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 62
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 68
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 53
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 49
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 48
+    }
+  ],
+  "dengue": [
+    {
+      "date": "Jan 2024",
+      "interest": 21
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 14
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 16
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 25
+    },
+    {
+      "date": "May 2024",
+      "interest": 16
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 11
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 58
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 99
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 92
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 93
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 51
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 22
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 10
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 19
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 11
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 18
+    },
+    {
+      "date": "May 2025",
+      "interest": 17
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 11
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 57
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 99
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 94
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 99
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 49
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 18
+    }
+  ]
+}

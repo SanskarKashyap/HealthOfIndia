@@ -16,3 +16,6 @@ node_modules/
 # Temp
 *.tmp
 *.log
+
+# Raw Data
+data/nfhs_raw/
