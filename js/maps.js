@@ -4,7 +4,7 @@ import { conditionConfig, getColorScale } from './utils.js';
 // Setup common tooltip select
 const tooltip = d3.select("#map-tooltip");
 
-export function renderSingleMap(containerId, geojsonData, dataMap, type, field, title, onClickRegion) {
+export function renderSingleMap(containerId, geojsonData, dataMap, type, field, title, onClickRegion, forcedPalette) {
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
@@ -51,7 +51,9 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   const minVal = values.length ? d3.min(values) : 0;
   const maxVal = values.length ? d3.max(values) : 100;
 
-  const colorScale = getColorScale(type === 'state' ? 'search' : 'health', minVal, maxVal);
+  const paletteType = forcedPalette || (type === 'state' ? 'search' : 'health');
+  const isSearch = paletteType === 'search';
+  const colorScale = getColorScale(paletteType, minVal, maxVal);
 
   const mapGroup = svg.append("g")
     .attr("transform", "translate(10, 30)");
@@ -78,9 +80,9 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
     const regionName = type === 'state' ? d.properties.ST_NM : d.properties.Dist_name;
     const key = type === 'state' ? d.properties.ST_NM : d.properties.DISTRICT;
     const val = dataMap.get(key);
-    const label = type === 'state' ? 'Search Interest' : conditionConfig[field].healthLabel;
+    const label = isSearch ? 'Search Interest' : conditionConfig[field].healthLabel;
     const formattedVal = (val !== undefined && val !== null) 
-      ? (type === 'state' ? `${val} / 100` : conditionConfig[field].format(val)) 
+      ? (isSearch ? `${val} / 100` : conditionConfig[field].format(val)) 
       : 'N/A';
 
     d3.select(this)
@@ -96,7 +98,7 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
         ${type === 'district' ? `<div class="tooltip-row"><span class="tooltip-label">State:</span><span class="tooltip-value">${d.properties.ST_NM}</span></div>` : ''}
         <div class="tooltip-row">
           <span class="tooltip-label">${label}:</span>
-          <span class="tooltip-value" style="color:var(--${type === 'state' ? 'search' : 'health'}-primary)">${formattedVal}</span>
+          <span class="tooltip-value" style="color:var(--${isSearch ? 'search' : 'health'}-primary)">${formattedVal}</span>
         </div>
       `);
   })
@@ -122,7 +124,7 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   }
 
   // Draw Legend
-  drawLegend(container, type === 'state' ? 'search' : 'health', minVal, maxVal, type === 'state' ? 'Search Interest' : conditionConfig[field].healthLabel, type === 'state' ? '' : conditionConfig[field].unit);
+  drawLegend(container, paletteType, minVal, maxVal, isSearch ? 'Search Interest' : conditionConfig[field].healthLabel, isSearch ? '' : conditionConfig[field].unit);
 }
 
 export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, stateTrends, districtHealth, condition) {

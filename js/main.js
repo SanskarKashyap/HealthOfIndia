@@ -123,8 +123,8 @@ function renderCurrentStep() {
       break;
       
     case 2:
-      // Step 2: Search Map (State level)
-      // If a state is selected, filter/zoom on that state; else show All India
+      // Step 2: Search Map (State level / District level when zoomed in)
+      // If a state is selected, filter/zoom to show district search trends for that state; else show All India
       if (activeSt === 'all') {
         const trendsMap = new Map(Object.entries(state.data.stateTrends[cond]));
         renderSingleMap("vis-container", state.data.statesGeoJSON, trendsMap, 'state', cond, `Google Trends: Search Volume for "${conditionConfig[cond].title}"`, (selectedState) => {
@@ -134,13 +134,19 @@ function renderCurrentStep() {
           renderCurrentStep();
         });
       } else {
-        // Show zoomed-in map of just that state
-        const stateGeo = {
+        // Zoom in to show district-level search trends in the selected state
+        const stateDistGeo = {
           type: 'FeatureCollection',
-          features: state.data.statesGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
+          features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
         };
-        const trendsMap = new Map([[activeSt, state.data.stateTrends[cond][activeSt] || 0]]);
-        renderSingleMap("vis-container", stateGeo, trendsMap, 'state', cond, `Search Volume: ${activeSt}`, null);
+        const trendsMap = new Map();
+        const distTrends = state.data.districtTrends[cond] || {};
+        stateDistGeo.features.forEach(f => {
+          const key = f.properties.DISTRICT;
+          trendsMap.set(key, distTrends[key] !== undefined ? distTrends[key] : 0);
+        });
+
+        renderSingleMap("vis-container", stateDistGeo, trendsMap, 'district', cond, `District Search Volume: ${activeSt}`, null, 'search');
       }
       break;
       
