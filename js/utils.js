@@ -3,15 +3,15 @@
 // Curated Emerald (Search) and Royal Blue (Health) palettes
 export const colorPalettes = {
   search: [
-    '#022c22', // Deepest Green
-    '#064e3b',
-    '#065f46',
-    '#047857',
-    '#059669',
-    '#10b981', // Emerald Primary
-    '#34d399',
-    '#6ee7b7',
-    '#a7f3d0'  // Lightest Green
+    '#042f2e', // Deepest Teal
+    '#115e59',
+    '#0f766e',
+    '#0d9488',
+    '#14b8a6',
+    '#2dd4bf', // Teal/Mint Primary (#2DD4BF)
+    '#5eead4',
+    '#99f6e4',
+    '#ccfbf1'  // Lightest Mint
   ],
   health: [
     '#172554', // Deepest Blue

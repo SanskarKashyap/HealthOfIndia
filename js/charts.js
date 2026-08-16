@@ -443,11 +443,12 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
   const n = raw.length;
 
   // Layout
-  const margin = { top: 54, right: 28, bottom: 36, left: 148 };
+  const margin = { top: 54, right: 32, bottom: 36, left: 156 };
   const chartW  = totalWidth - margin.left - margin.right;
-  const barBand = Math.max(10, Math.floor((totalHeight - margin.top - margin.bottom) / n));
-  const barH    = Math.max(4,  Math.floor(barBand * 0.38));
-  const gap     = Math.max(1,  barBand - barH * 2);
+  const minBarBand = 24; // Ensures clear vertical spacing between states
+  const barBand = Math.max(minBarBand, Math.floor((totalHeight - margin.top - margin.bottom) / n));
+  const barH    = Math.max(5,  Math.floor(barBand * 0.35));
+  const gap     = Math.max(2,  Math.floor(barBand * 0.12));
   const chartH  = barBand * n;
 
   const svg = container.append('svg')
@@ -522,13 +523,14 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
     .attr('class', 'bar-row')
     .attr('transform', (d, i) => `translate(0, ${i * barBand})`);
 
-  // State name labels
+  // State name labels — formatted for legibility without overlap
   rows.append('text')
-    .attr('x', -6).attr('y', barH + barH / 2 + gap / 2)
+    .attr('x', -8).attr('y', barH + gap / 2)
     .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
-    .attr('fill', 'var(--text-secondary)')
+    .attr('fill', '#D1D5DB')
     .attr('font-family', 'var(--font-body)')
-    .attr('font-size', Math.min(11, barBand * 0.7) + 'px')
+    .attr('font-size', '0.72rem')
+    .attr('font-weight', 500)
     .text(d => d.name);
 
   // Search bars (top)
