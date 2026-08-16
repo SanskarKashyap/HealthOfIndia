@@ -202,15 +202,20 @@ export function renderScatterPlot(containerId, stateHealth, stateTrends, conditi
   const chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-  // Prepare data: match state health rates and search trends
+  // Prepare data: match health rates and search trends
   const data = stateHealth.map(sh => {
-    const stateName = sh.state;
-    const searchVal = stateTrends[condition][stateName] || 0;
+    const isDistrict = sh.id !== undefined;
+    const name = isDistrict ? sh.name : sh.state;
+    const lookupKey = isDistrict ? sh.id : sh.state;
+    const searchVal = stateTrends[condition] ? (stateTrends[condition][lookupKey] || 0) : 0;
     const healthVal = sh[condition] || 0;
     return {
-      state: stateName,
+      state: name,
+      id: lookupKey,
       search: searchVal,
-      health: healthVal
+      health: healthVal,
+      isDistrict: isDistrict,
+      fullName: isDistrict ? `${name} (${sh.state})` : name
     };
   });
 
@@ -273,7 +278,7 @@ export function renderScatterPlot(containerId, stateHealth, stateTrends, conditi
   // Add a diagonal/correlation helper line if it is a direct match
   const rValue = calculateCorrelation(data.map(d => d.search), data.map(d => d.health));
 
-  // Render state dots
+  // Render dots
   const dots = chartGroup.selectAll(".scatter-dot")
     .data(data)
     .enter()
@@ -291,7 +296,7 @@ export function renderScatterPlot(containerId, stateHealth, stateTrends, conditi
     .delay((d, i) => i * 15)
     .attr("r", 6.5);
 
-  // Add state labels next to dots
+  // Add labels next to dots
   const labels = chartGroup.selectAll(".scatter-label")
     .data(data)
     .enter()
@@ -328,7 +333,7 @@ export function renderScatterPlot(containerId, stateHealth, stateTrends, conditi
     tooltip
       .style("opacity", 1)
       .html(`
-        <div class="tooltip-title">${d.state}</div>
+        <div class="tooltip-title">${d.fullName}</div>
         <div class="tooltip-row">
           <span class="tooltip-label">Search Interest:</span>
           <span class="tooltip-value" style="color:var(--search-primary)">${d.search} / 100</span>
@@ -363,6 +368,9 @@ export function renderScatterPlot(containerId, stateHealth, stateTrends, conditi
     if (onLeaveState) onLeaveState(d.state);
   });
 
+  const isDistrict = data.length > 0 && data[0].isDistrict;
+  const comparisonTitle = isDistrict ? `District Comparison: Search vs. Clinical Reality` : `State Comparison: Search vs. Clinical Reality`;
+
   // Title / Correlation Score overlay
   svg.append("text")
     .attr("x", margin.left)
@@ -371,7 +379,7 @@ export function renderScatterPlot(containerId, stateHealth, stateTrends, conditi
     .attr("font-family", "var(--font-header)")
     .attr("font-size", "1.1rem")
     .attr("font-weight", 700)
-    .text(`State Comparison: Search vs. Clinical Reality`);
+    .text(comparisonTitle);
 
   svg.append("text")
     .attr("x", margin.left)

@@ -193,45 +193,35 @@ function renderCurrentStep() {
       
     case 5:
       // Step 5: Scatter Plot
-      renderScatterPlot("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 
-        // Sync hover to scatter dot
-        (stateName) => {
-          d3.select(`#synced-state-${stateName.replace(/\s+/g, '-')}`).style("stroke", "#ffffff").style("stroke-width", "1.5px");
-        }, 
-        (stateName) => {
-          d3.select(`#synced-state-${stateName.replace(/\s+/g, '-')}`).style("stroke", "var(--bg-color)").style("stroke-width", "0.5px");
-        }
-      );
-      
-      // Highlight selected state in scatter plot if not 'all'
-      if (activeSt !== 'all') {
-        setTimeout(() => {
-          d3.select(`#scatter-dot-${activeSt.replace(/\s+/g, '-')}`)
-            .transition()
-            .duration(500)
-            .attr("r", 12)
-            .style("fill", "#ffffff")
-            .style("stroke", "var(--health-primary)")
-            .style("stroke-width", "3px");
-            
-          d3.select(`#scatter-label-${activeSt.replace(/\s+/g, '-')}`)
-            .attr("fill", "var(--text-primary)")
-            .attr("font-weight", 800)
-            .style("font-size", "0.85rem");
-        }, 1000);
+      if (activeSt === 'all') {
+        renderScatterPlot("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 
+          // Sync hover to scatter dot
+          (stateName) => {
+            d3.select(`#synced-state-${stateName.replace(/\s+/g, '-')}`).style("stroke", "#ffffff").style("stroke-width", "1.5px");
+          }, 
+          (stateName) => {
+            d3.select(`#synced-state-${stateName.replace(/\s+/g, '-')}`).style("stroke", "var(--bg-color)").style("stroke-width", "0.5px");
+          }
+        );
+      } else {
+        const filteredDistHealth = state.data.districtHealth.filter(d => d.state === activeSt);
+        renderScatterPlot("vis-container", filteredDistHealth, state.data.districtTrends, cond, null, null);
       }
       break;
       
     case 6:
       // Step 6: Outliers Focus
       // We keep the Scatter Plot visible, but we inject the Outliers content in the narrative panel card
-      renderScatterPlot("vis-container", state.data.stateHealth, state.data.stateTrends, cond, null, null);
+      if (activeSt === 'all') {
+        renderScatterPlot("vis-container", state.data.stateHealth, state.data.stateTrends, cond, null, null);
+        highlightOutliersInScatter(cond);
+      } else {
+        const filteredDistHealth = state.data.districtHealth.filter(d => d.state === activeSt);
+        renderScatterPlot("vis-container", filteredDistHealth, state.data.districtTrends, cond, null, null);
+      }
       
       // Inject outlier tables into Step 6 text card
       d3.select("#outliers-container").html(conditionOutliers[cond] || '<p>No specific outlier records documented.</p>');
-      
-      // Highlight outlier dots in scatter plot!
-      highlightOutliersInScatter(cond);
       break;
       
     case 7:
