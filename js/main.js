@@ -178,7 +178,7 @@ function renderCurrentStep() {
       if (activeSt === 'all') {
         renderSyncedMaps("vis-container", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond);
       } else {
-        // Filter side-by-side to selected state
+        // Filter side-by-side to selected state; pass districtTrends so left map shows district search data
         const filteredStateGeo = {
           type: 'FeatureCollection',
           features: state.data.statesGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
@@ -187,7 +187,7 @@ function renderCurrentStep() {
           type: 'FeatureCollection',
           features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
         };
-        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond);
+        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond, state.data.districtTrends);
       }
       break;
       

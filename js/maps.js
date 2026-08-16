@@ -127,9 +127,12 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   drawLegend(container, paletteType, minVal, maxVal, isSearch ? 'Search Interest' : conditionConfig[field].healthLabel, isSearch ? '' : conditionConfig[field].unit);
 }
 
-export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, stateTrends, districtHealth, condition) {
+export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, stateTrends, districtHealth, condition, districtTrends) {
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
+
+  // Detect zoom mode: a single state is selected
+  const isZoomed = statesGeoJSON.features.length <= 2;
 
   // Renders container as side by side grid
   const wrapper = container.append("div")
@@ -139,76 +142,100 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const rightPanel = wrapper.append("div").attr("class", "synced-map-panel").attr("id", "synced-right");
 
   const leftRect = leftPanel.node().getBoundingClientRect();
-  const rightRect = rightPanel.node().getBoundingClientRect();
-  
   const w = leftRect.width;
   const h = leftRect.height;
 
-  leftPanel.append("div").attr("class", "map-title").text(`Google Trends Search Interest`);
-  rightPanel.append("div").attr("class", "map-title").text(`Clinical Health Outcome (NFHS-5)`);
+  const leftTitle  = isZoomed ? `District Search Interest` : `Google Trends Search Interest`;
+  const rightTitle = `Clinical Health Outcome (NFHS-5)`;
+  leftPanel.append("div").attr("class", "map-title").text(leftTitle);
+  rightPanel.append("div").attr("class", "map-title").text(rightTitle);
 
-  const leftSvg = leftPanel.append("svg").attr("width", w).attr("height", h);
+  const leftSvg  = leftPanel.append("svg").attr("width", w).attr("height", h);
   const rightSvg = rightPanel.append("svg").attr("width", w).attr("height", h);
 
-  // Setup Projection identically, focusing on mainland for national scaling
-  const fitStates = statesGeoJSON.features.filter(f => {
-    const name = f.properties.ST_NM;
-    return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
+  // ── Projections ─────────────────────────────────────────────
+  // Left projection: use districts geo when zoomed, states otherwise
+  const leftGeoForProj = isZoomed ? districtsGeoJSON : statesGeoJSON;
+  const leftFit = leftGeoForProj.features.filter(f => {
+    const nm = f.properties.ST_NM;
+    return nm !== 'Andaman & Nicobar Island' && nm !== 'Lakshadweep' && nm !== 'Andaman & Nicobar Islands';
   });
-  const leftProjGeoJSON = (statesGeoJSON.features.length > 5 && fitStates.length > 0)
-    ? { type: 'FeatureCollection', features: fitStates }
-    : statesGeoJSON;
+  const leftProjSrc = (leftGeoForProj.features.length > 5 && leftFit.length > 0)
+    ? { type: 'FeatureCollection', features: leftFit }
+    : leftGeoForProj;
 
-  const fitDists = districtsGeoJSON.features.filter(f => {
-    const name = f.properties.ST_NM;
-    return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
+  const rightFit = districtsGeoJSON.features.filter(f => {
+    const nm = f.properties.ST_NM;
+    return nm !== 'Andaman & Nicobar Island' && nm !== 'Lakshadweep' && nm !== 'Andaman & Nicobar Islands';
   });
-  const rightProjGeoJSON = (districtsGeoJSON.features.length > 5 && fitDists.length > 0)
-    ? { type: 'FeatureCollection', features: fitDists }
+  const rightProjSrc = (districtsGeoJSON.features.length > 5 && rightFit.length > 0)
+    ? { type: 'FeatureCollection', features: rightFit }
     : districtsGeoJSON;
 
-  const leftProjection = d3.geoMercator().fitSize([w - 20, h - 60], leftProjGeoJSON);
-  const rightProjection = d3.geoMercator().fitSize([w - 20, h - 60], rightProjGeoJSON);
+  const leftProjection  = d3.geoMercator().fitSize([w - 20, h - 60], leftProjSrc);
+  const rightProjection = d3.geoMercator().fitSize([w - 20, h - 60], rightProjSrc);
 
-  const leftPath = d3.geoPath().projection(leftProjection);
+  const leftPath  = d3.geoPath().projection(leftProjection);
   const rightPath = d3.geoPath().projection(rightProjection);
 
-  // Setup color scales
+  // ── Color scales ─────────────────────────────────────────────
   const config = conditionConfig[condition];
-  
-  // Left Map (States Trends) values
-  const searchValues = Object.values(stateTrends[condition]);
-  const leftMin = d3.min(searchValues) || 0;
-  const leftMax = d3.max(searchValues) || 100;
-  const leftScale = getColorScale('search', leftMin, leftMax);
 
-  // Right Map (Districts Health) values
+  // Left scale — search
+  let leftMin, leftMax, leftScale;
+  if (isZoomed && districtTrends) {
+    // Use district search values for the selected state
+    const dVals = districtsGeoJSON.features.map(f => (districtTrends[condition] || {})[f.properties.DISTRICT] || 0);
+    leftMin = d3.min(dVals) || 0;
+    leftMax = d3.max(dVals) || 100;
+  } else {
+    const sVals = Object.values(stateTrends[condition]);
+    leftMin = d3.min(sVals) || 0;
+    leftMax = d3.max(sVals) || 100;
+  }
+  leftScale = getColorScale('search', leftMin, leftMax);
+
+  // Right scale — health
   const healthValues = districtHealth.map(d => d[condition]);
   const rightMin = d3.min(healthValues) || 0;
   const rightMax = d3.max(healthValues) || 100;
   const rightScale = getColorScale('health', rightMin, rightMax);
 
-  const leftGroup = leftSvg.append("g").attr("transform", "translate(10, 30)");
+  const leftGroup  = leftSvg.append("g").attr("transform", "translate(10, 30)");
   const rightGroup = rightSvg.append("g").attr("transform", "translate(10, 30)");
 
-  // Draw States
-  const statePaths = leftGroup.selectAll("path")
-    .data(statesGeoJSON.features)
-    .enter()
-    .append("path")
-    .attr("d", leftPath)
-    .attr("class", "state")
-    .attr("id", f => `synced-state-${f.properties.ST_NM.replace(/\s+/g, '-')}`)
-    .style("fill", f => {
-      const val = stateTrends[condition][f.properties.ST_NM];
-      return (val !== undefined) ? leftScale(val) : "#1e293b";
-    });
+  // ── Left map ─────────────────────────────────────────────────
+  let leftPaths;
+  if (isZoomed && districtTrends) {
+    // Draw districts with district-level search trends (green palette)
+    leftPaths = leftGroup.selectAll("path")
+      .data(districtsGeoJSON.features)
+      .enter().append("path")
+      .attr("d", leftPath)
+      .attr("class", "district")
+      .attr("id", f => `synced-left-dist-${f.properties.DISTRICT.replace(/\s+/g, '-')}`)
+      .style("fill", f => {
+        const val = (districtTrends[condition] || {})[f.properties.DISTRICT];
+        return (val !== undefined) ? leftScale(val) : "#1e293b";
+      });
+  } else {
+    // Draw states with state-level search trends
+    leftPaths = leftGroup.selectAll("path")
+      .data(statesGeoJSON.features)
+      .enter().append("path")
+      .attr("d", leftPath)
+      .attr("class", "state")
+      .attr("id", f => `synced-state-${f.properties.ST_NM.replace(/\s+/g, '-')}`)
+      .style("fill", f => {
+        const val = stateTrends[condition][f.properties.ST_NM];
+        return (val !== undefined) ? leftScale(val) : "#1e293b";
+      });
+  }
 
-  // Draw Districts
+  // ── Right map (districts — always) ───────────────────────────
   const districtPaths = rightGroup.selectAll("path")
     .data(districtsGeoJSON.features)
-    .enter()
-    .append("path")
+    .enter().append("path")
     .attr("d", rightPath)
     .attr("class", "district")
     .attr("id", f => `synced-dist-${f.properties.DISTRICT.replace(/\s+/g, '-')}`)
@@ -217,105 +244,96 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
       return (distInfo && distInfo[condition] !== undefined) ? rightScale(distInfo[condition]) : "#1e293b";
     });
 
-  // Synchronized Hover Logic!
-  statePaths.on("mouseover", function(event, d) {
-    const stateName = d.properties.ST_NM;
-    const val = stateTrends[condition][stateName];
+  // ── Synchronized hover ────────────────────────────────────────
+  leftPaths.on("mouseover", function(event, d) {
+    const isDistrictFeature = d.properties.DISTRICT !== undefined;
+    const searchKey  = isDistrictFeature ? d.properties.DISTRICT : d.properties.ST_NM;
+    const regionName = isDistrictFeature ? d.properties.Dist_name  : d.properties.ST_NM;
+    const stateName  = d.properties.ST_NM;
 
-    // Highlight this state
-    d3.select(this)
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "1.5px");
+    let val;
+    if (isDistrictFeature && districtTrends) {
+      val = (districtTrends[condition] || {})[searchKey];
+    } else {
+      val = stateTrends[condition][searchKey];
+    }
 
-    // Highlight all districts in the right map belonging to this state!
+    d3.select(this).style("stroke", "#ffffff").style("stroke-width", isDistrictFeature ? "1.25px" : "1.5px");
+
+    // Cross-highlight: sync districts on right that belong to same state
     districtPaths.filter(df => df.properties.ST_NM === stateName)
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "0.8px");
+      .style("stroke", "#ffffff").style("stroke-width", "0.8px");
 
-    tooltip
-      .style("opacity", 1)
-      .html(`
-        <div class="tooltip-title">${stateName}</div>
-        <div class="tooltip-row">
-          <span class="tooltip-label">Search Interest:</span>
-          <span class="tooltip-value" style="color:var(--search-primary)">${val !== undefined ? `${val} / 100` : 'N/A'}</span>
-        </div>
-      `);
+    tooltip.style("opacity", 1).html(`
+      <div class="tooltip-title">${regionName}</div>
+      ${isDistrictFeature ? `<div class="tooltip-row"><span class="tooltip-label">State:</span><span class="tooltip-value">${stateName}</span></div>` : ''}
+      <div class="tooltip-row">
+        <span class="tooltip-label">Search Interest:</span>
+        <span class="tooltip-value" style="color:var(--search-primary)">${val !== undefined ? `${val} / 100` : 'N/A'}</span>
+      </div>
+    `);
   })
   .on("mousemove", function(event) {
-    tooltip
-      .style("left", `${event.pageX + 15}px`)
-      .style("top", `${event.pageY - 15}px`);
+    tooltip.style("left", `${event.pageX + 15}px`).style("top", `${event.pageY - 15}px`);
   })
   .on("mouseleave", function(event, d) {
     const stateName = d.properties.ST_NM;
-
-    // Reset state highlight
-    d3.select(this)
-      .style("stroke", "var(--bg-color)")
-      .style("stroke-width", "0.5px");
-
-    // Reset districts highlights
+    const isDistrictFeature = d.properties.DISTRICT !== undefined;
+    d3.select(this).style("stroke", "var(--bg-color)").style("stroke-width", isDistrictFeature ? "0.25px" : "0.5px");
     districtPaths.filter(df => df.properties.ST_NM === stateName)
-      .style("stroke", "var(--bg-color)")
-      .style("stroke-width", "0.25px");
-
+      .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
     tooltip.style("opacity", 0);
   });
 
   districtPaths.on("mouseover", function(event, d) {
-    const distId = d.properties.DISTRICT;
+    const distId   = d.properties.DISTRICT;
     const stateName = d.properties.ST_NM;
     const distName = d.properties.Dist_name;
     const distInfo = districtHealth.find(dh => dh.id === distId);
     const val = distInfo ? distInfo[condition] : null;
 
-    // Highlight this district
-    d3.select(this)
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "1.25px");
+    d3.select(this).style("stroke", "#ffffff").style("stroke-width", "1.25px");
 
-    // Highlight the parent state in the left map!
-    statePaths.filter(sf => sf.properties.ST_NM === stateName)
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "1.5px");
+    // Highlight matching left-map region
+    if (isZoomed) {
+      leftPaths.filter(lf => lf.properties.DISTRICT === distId)
+        .style("stroke", "#ffffff").style("stroke-width", "1.25px");
+    } else {
+      leftPaths.filter(lf => lf.properties.ST_NM === stateName)
+        .style("stroke", "#ffffff").style("stroke-width", "1.5px");
+    }
 
-    tooltip
-      .style("opacity", 1)
-      .html(`
-        <div class="tooltip-title">${distName}</div>
-        <div class="tooltip-row"><span class="tooltip-label">State:</span><span class="tooltip-value">${stateName}</span></div>
-        <div class="tooltip-row">
-          <span class="tooltip-label">${config.healthLabel}:</span>
-          <span class="tooltip-value" style="color:var(--health-primary)">${val !== null ? config.format(val) : 'N/A'}</span>
-        </div>
-      `);
+    tooltip.style("opacity", 1).html(`
+      <div class="tooltip-title">${distName}</div>
+      <div class="tooltip-row"><span class="tooltip-label">State:</span><span class="tooltip-value">${stateName}</span></div>
+      <div class="tooltip-row">
+        <span class="tooltip-label">${config.healthLabel}:</span>
+        <span class="tooltip-value" style="color:var(--health-primary)">${val !== null ? config.format(val) : 'N/A'}</span>
+      </div>
+    `);
   })
   .on("mousemove", function(event) {
-    tooltip
-      .style("left", `${event.pageX + 15}px`)
-      .style("top", `${event.pageY - 15}px`);
+    tooltip.style("left", `${event.pageX + 15}px`).style("top", `${event.pageY - 15}px`);
   })
   .on("mouseleave", function(event, d) {
+    const distId    = d.properties.DISTRICT;
     const stateName = d.properties.ST_NM;
-
-    // Reset district highlight
-    d3.select(this)
-      .style("stroke", "var(--bg-color)")
-      .style("stroke-width", "0.25px");
-
-    // Reset parent state highlight
-    statePaths.filter(sf => sf.properties.ST_NM === stateName)
-      .style("stroke", "var(--bg-color)")
-      .style("stroke-width", "0.5px");
-
+    d3.select(this).style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
+    if (isZoomed) {
+      leftPaths.filter(lf => lf.properties.DISTRICT === distId)
+        .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
+    } else {
+      leftPaths.filter(lf => lf.properties.ST_NM === stateName)
+        .style("stroke", "var(--bg-color)").style("stroke-width", "0.5px");
+    }
     tooltip.style("opacity", 0);
   });
 
-  // Draw legends for both
-  drawLegend(leftPanel, 'search', leftMin, leftMax, 'Search Interest', '');
+  // ── Legends ───────────────────────────────────────────────────
+  drawLegend(leftPanel,  'search', leftMin, leftMax,  'Search Interest', '');
   drawLegend(rightPanel, 'health', rightMin, rightMax, config.healthLabel, config.unit);
 }
+
 
 export function renderSmallGrids(containerId, statesGeoJSON, stateTrends, stateHealth, onClickCell) {
   const container = d3.select(`#${containerId}`);
