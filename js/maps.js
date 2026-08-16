@@ -24,9 +24,17 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
     .attr("class", "map-title")
     .text(title);
 
-  // Setup Projection
+  // Setup Projection (Focus on mainland for national maps to prevent islands from shrinking it)
+  const fitFeatures = geojsonData.features.filter(f => {
+    const name = f.properties.ST_NM;
+    return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
+  });
+  const projectionGeoJSON = (geojsonData.features.length > 5 && fitFeatures.length > 0) 
+    ? { type: 'FeatureCollection', features: fitFeatures } 
+    : geojsonData;
+
   const projection = d3.geoMercator()
-    .fitSize([width - 20, height - 60], geojsonData);
+    .fitSize([width - 20, height - 60], projectionGeoJSON);
 
   const pathGenerator = d3.geoPath().projection(projection);
 
@@ -140,9 +148,25 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const leftSvg = leftPanel.append("svg").attr("width", w).attr("height", h);
   const rightSvg = rightPanel.append("svg").attr("width", w).attr("height", h);
 
-  // Setup Projection identically
-  const leftProjection = d3.geoMercator().fitSize([w - 20, h - 60], statesGeoJSON);
-  const rightProjection = d3.geoMercator().fitSize([w - 20, h - 60], districtsGeoJSON);
+  // Setup Projection identically, focusing on mainland for national scaling
+  const fitStates = statesGeoJSON.features.filter(f => {
+    const name = f.properties.ST_NM;
+    return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
+  });
+  const leftProjGeoJSON = (statesGeoJSON.features.length > 5 && fitStates.length > 0)
+    ? { type: 'FeatureCollection', features: fitStates }
+    : statesGeoJSON;
+
+  const fitDists = districtsGeoJSON.features.filter(f => {
+    const name = f.properties.ST_NM;
+    return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
+  });
+  const rightProjGeoJSON = (districtsGeoJSON.features.length > 5 && fitDists.length > 0)
+    ? { type: 'FeatureCollection', features: fitDists }
+    : districtsGeoJSON;
+
+  const leftProjection = d3.geoMercator().fitSize([w - 20, h - 60], leftProjGeoJSON);
+  const rightProjection = d3.geoMercator().fitSize([w - 20, h - 60], rightProjGeoJSON);
 
   const leftPath = d3.geoPath().projection(leftProjection);
   const rightPath = d3.geoPath().projection(rightProjection);
