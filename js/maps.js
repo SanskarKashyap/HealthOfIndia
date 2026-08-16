@@ -172,8 +172,8 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
     ? { type: 'FeatureCollection', features: rightFit }
     : districtsGeoJSON;
 
-  const leftProjection  = d3.geoMercator().fitExtent([[24, 52], [w - 24, h - 52]], leftProjSrc);
-  const rightProjection = d3.geoMercator().fitExtent([[24, 52], [w - 24, h - 52]], rightProjSrc);
+  const leftProjection  = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], leftProjSrc);
+  const rightProjection = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], rightProjSrc);
 
   const leftPath  = d3.geoPath().projection(leftProjection);
   const rightPath = d3.geoPath().projection(rightProjection);
@@ -274,7 +274,8 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
     `);
   })
   .on("mousemove", function(event) {
-    tooltip.style("left", `${event.pageX + 15}px`).style("top", `${event.pageY - 15}px`);
+    tooltip.style("left", `${event.pageX + 15}px`)
+      .style("top", `${event.pageY - 15}px`);
   })
   .on("mouseleave", function(event, d) {
     const stateName = d.properties.ST_NM;
@@ -313,7 +314,8 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
     `);
   })
   .on("mousemove", function(event) {
-    tooltip.style("left", `${event.pageX + 15}px`).style("top", `${event.pageY - 15}px`);
+    tooltip.style("left", `${event.pageX + 15}px`)
+      .style("top", `${event.pageY - 15}px`);
   })
   .on("mouseleave", function(event, d) {
     const distId    = d.properties.DISTRICT;
@@ -339,76 +341,35 @@ export function renderSmallGrids(containerId, statesGeoJSON, stateTrends, stateH
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
-  const grid = container.append("div")
-    .attr("class", "grid-vis");
+  // 12 columns grid
+  const wrapper = container.append("div").attr("class", "small-grids-container");
 
-  const conditions = ['cancer', 'heart', 'diabetes', 'obesity', 'depression', 'tb', 'baldness', 'dengue'];
+  const titleBox = wrapper.append("div").attr("class", "small-grids-header");
+  titleBox.append("h3").text("State-by-State Health Overview");
+  titleBox.append("p").text("Each card shows state health score vs search index across all conditions. Click any state card to load into scrollytelling.");
 
-  conditions.forEach(cond => {
-    const config = conditionConfig[cond];
-    const cell = grid.append("div")
-      .attr("class", "grid-cell")
-      .on("click", () => {
-        if (onClickCell) onClickCell(cond);
-      });
+  const grid = wrapper.append("div").attr("class", "small-grids-grid");
 
-    cell.append("div")
-      .attr("class", "grid-cell-title")
-      .text(config.title);
+  stateHealth.forEach(sh => {
+    const stName = sh.state;
+    const card = grid.append("div")
+      .attr("class", "state-grid-card")
+      .on("click", () => onClickCell(stName));
 
-    const cellMapDiv = cell.append("div")
-      .attr("class", "grid-cell-map");
+    card.append("div").attr("class", "state-card-name").text(stName);
 
-    // Set up dimensions for cell map
-    const rect = cellMapDiv.node().getBoundingClientRect();
-    const w = rect.width || 120;
-    const h = rect.height || 100;
-
-    const svg = cellMapDiv.append("svg").attr("width", w).attr("height", h);
-
-    const projection = d3.geoMercator().fitSize([w, h], statesGeoJSON);
-    const pathGenerator = d3.geoPath().projection(projection);
-
-    const searchValues = Object.values(stateTrends[cond]);
-    const minVal = d3.min(searchValues) || 0;
-    const maxVal = d3.max(searchValues) || 100;
-    const colorScale = getColorScale('search', minVal, maxVal);
-
-    svg.append("g")
-      .selectAll("path")
-      .data(statesGeoJSON.features)
-      .enter()
-      .append("path")
-      .attr("d", pathGenerator)
-      .style("stroke", "none")
-      .style("fill", f => {
-        const val = stateTrends[cond][f.properties.ST_NM];
-        return (val !== undefined) ? colorScale(val) : "#1e293b";
-      });
+    const metrics = card.append("div").attr("class", "state-card-metrics");
+    Object.keys(conditionConfig).slice(0, 4).forEach(cond => {
+      const val = sh[cond] || 0;
+      const row = metrics.append("div").attr("class", "state-card-row");
+      row.append("span").attr("class", "state-card-label").text(conditionConfig[cond].title);
+      row.append("span").attr("class", "state-card-val").text(conditionConfig[cond].format(val));
+    });
   });
-
-  // Add a summary card in the 9th slot
-  const infoCell = grid.append("div")
-    .attr("class", "grid-cell")
-    .style("background", "rgba(59, 130, 246, 0.04)")
-    .style("border-color", "rgba(59, 130, 246, 0.2)");
-    
-  infoCell.append("div")
-    .attr("class", "grid-cell-title")
-    .style("color", "var(--health-primary)")
-    .text("Info Matrix");
-    
-  infoCell.append("p")
-    .style("font-size", "0.65rem")
-    .style("color", "var(--text-secondary)")
-    .style("text-align", "center")
-    .style("padding", "5px")
-    .text("Click any grid cell to load that health condition into the scrollytelling narrative above.");
 }
 
-// Private helper to draw legends
+// Helper to draw map legends cleanly
 function drawLegend(container, paletteType, minVal, maxVal, title, unit) {
-  // Remove existing legends first
   container.selectAll(".legend-container").remove();
 
   const legend = container.append("div")
@@ -418,46 +379,28 @@ function drawLegend(container, paletteType, minVal, maxVal, title, unit) {
     .attr("class", "legend-title")
     .text(title);
 
-  // Gradient legend bar
-  const gradientClass = `legend-grad-${paletteType}`;
-  let legendGradient = d3.select("body").select("svg").select("defs").select(`#${gradientClass}`);
-  
-  if (legendGradient.empty()) {
-    // Add to main body svg defs or create one locally
-    const localDefs = legend.append("svg").attr("width", 0).attr("height", 0).append("defs");
-    legendGradient = localDefs.append("linearGradient")
-      .attr("id", gradientClass)
-      .attr("x1", "0%").attr("y1", "0%")
-      .attr("x2", "100%").attr("y2", "0%");
-
-    const colors = colorPalettes[paletteType];
-    colors.forEach((color, i) => {
-      legendGradient.append("stop")
-        .attr("offset", `${(i / (colors.length - 1)) * 100}%`)
-        .attr("stop-color", color);
-    });
-  }
-
-  // Legend bar drawing
+  // Linear gradient bar (low/dark on left, high/bright on right)
+  const palette = colorPalettes[paletteType] || colorPalettes.search;
   legend.append("div")
     .attr("class", "legend-bar")
-    .style("background", `linear-gradient(to right, ${[...colorPalettes[paletteType]].reverse().join(', ')})`);
+    .style("background", `linear-gradient(to right, ${palette.join(', ')})`);
 
   const labels = legend.append("div")
     .attr("class", "legend-labels");
 
   // Format labels nicely
-  const minLabel = paletteType === 'search' ? 'Low' : `${Math.round(minVal)}${unit}`;
-  const maxLabel = paletteType === 'search' ? 'High' : `${Math.round(maxVal)}${unit}`;
+  const formatVal = v => (v !== undefined && v !== null) ? (v < 10 && v % 1 !== 0 ? v.toFixed(1) : Math.round(v)) : 0;
+  const minLabel = paletteType === 'search' ? 'Low' : `${formatVal(minVal)}${unit}`;
+  const maxLabel = paletteType === 'search' ? 'High' : `${formatVal(maxVal)}${unit}`;
 
   labels.append("span").text(minLabel);
   labels.append("span").text(maxLabel);
 }
 
-// Keep access to palette colors
+// Access to palette colors matching design system
 const colorPalettes = {
   search: [
-    '#022c22', '#064e3b', '#065f46', '#047857', '#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'
+    '#042f2e', '#115e59', '#0f766e', '#0d9488', '#14b8a6', '#2dd4bf', '#5eead4', '#99f6e4', '#ccfbf1'
   ],
   health: [
     '#172554', '#1e3a8a', '#1e40af', '#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'
