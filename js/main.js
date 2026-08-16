@@ -2,7 +2,7 @@
 import { loadAllData } from './data-loader.js';
 import { conditionConfig, conditionOutliers } from './utils.js';
 import { renderSingleMap, renderSyncedMaps, renderSmallGrids } from './maps.js';
-import { renderLineChart, renderScatterPlot } from './charts.js';
+import { renderLineChart } from './charts.js';
 import { initScrollObserver } from './scroll-observer.js';
 
 // Application State
@@ -192,40 +192,26 @@ function renderCurrentStep() {
       break;
       
     case 5:
-      // Step 5: Scatter Plot
+      // Step 5: Outliers Focus — show synced maps + inject the outlier table
       if (activeSt === 'all') {
-        renderScatterPlot("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 
-          // Sync hover to scatter dot
-          (stateName) => {
-            d3.select(`#synced-state-${stateName.replace(/\s+/g, '-')}`).style("stroke", "#ffffff").style("stroke-width", "1.5px");
-          }, 
-          (stateName) => {
-            d3.select(`#synced-state-${stateName.replace(/\s+/g, '-')}`).style("stroke", "var(--bg-color)").style("stroke-width", "0.5px");
-          }
-        );
+        renderSyncedMaps("vis-container", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond);
       } else {
-        const filteredDistHealth = state.data.districtHealth.filter(d => d.state === activeSt);
-        renderScatterPlot("vis-container", filteredDistHealth, state.data.districtTrends, cond, null, null);
+        const filteredStateGeo = {
+          type: 'FeatureCollection',
+          features: state.data.statesGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
+        };
+        const filteredDistGeo = {
+          type: 'FeatureCollection',
+          features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
+        };
+        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond);
       }
-      break;
-      
-    case 6:
-      // Step 6: Outliers Focus
-      // We keep the Scatter Plot visible, but we inject the Outliers content in the narrative panel card
-      if (activeSt === 'all') {
-        renderScatterPlot("vis-container", state.data.stateHealth, state.data.stateTrends, cond, null, null);
-        highlightOutliersInScatter(cond);
-      } else {
-        const filteredDistHealth = state.data.districtHealth.filter(d => d.state === activeSt);
-        renderScatterPlot("vis-container", filteredDistHealth, state.data.districtTrends, cond, null, null);
-      }
-      
-      // Inject outlier tables into Step 6 text card
+      // Inject outlier table content
       d3.select("#outliers-container").html(conditionOutliers[cond] || '<p>No specific outlier records documented.</p>');
       break;
       
-    case 7:
-      // Step 7: 3x3 small grids
+    case 6:
+      // Step 6: National Matrix — 3x3 small grids
       renderSmallGrids("vis-container", state.data.statesGeoJSON, state.data.stateTrends, state.data.stateHealth, (selectedCond) => {
         // Callback when clicking small grid cell: switch condition!
         document.getElementById("condition-selector").value = selectedCond;
@@ -239,38 +225,6 @@ function renderCurrentStep() {
       });
       break;
   }
-}
-
-// Highlight outlier states in the Scatter plot (Step 6)
-function highlightOutliersInScatter(cond) {
-  // Determine outlier states based on condition
-  let outliers = [];
-  if (cond === 'cancer') outliers = ['NCT of Delhi', 'Mizoram', 'Bihar'];
-  else if (cond === 'heart') outliers = ['Kerala', 'Assam', 'Goa'];
-  else if (cond === 'diabetes') outliers = ['Kerala', 'West Bengal', 'Madhya Pradesh'];
-  else if (cond === 'obesity') outliers = ['Delhi', 'Punjab', 'Meghalaya'];
-  else if (cond === 'depression') outliers = ['Kerala', 'Delhi', 'Jharkhand'];
-  else if (cond === 'tb') outliers = ['Uttar Pradesh', 'Delhi', 'Kerala'];
-  else if (cond === 'baldness') outliers = ['Delhi', 'Maharashtra', 'Bihar'];
-  else if (cond === 'dengue') outliers = ['Delhi', 'Kerala', 'Rajasthan'];
-
-  // Add subtle pulse transition to outliers in the scatter plot
-  outliers.forEach(outlierName => {
-    const dotId = `#scatter-dot-${outlierName.replace(/\s+/g, '-')}`;
-    const labelId = `#scatter-label-${outlierName.replace(/\s+/g, '-')}`;
-    
-    d3.select(dotId)
-      .transition()
-      .duration(600)
-      .attr("r", 9)
-      .style("fill", "var(--search-primary)") // Color switch to Green/Search to make them pop!
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "2px");
-      
-    d3.select(labelId)
-      .attr("fill", "var(--text-primary)")
-      .attr("font-weight", 700);
-  });
 }
 
 // Debounce helper to minimize resize redraw calls
