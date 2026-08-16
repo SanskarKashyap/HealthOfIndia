@@ -2,7 +2,7 @@
 import { loadAllData } from './data-loader.js';
 import { conditionConfig, conditionOutliers } from './utils.js';
 import { renderSingleMap, renderSyncedMaps, renderSmallGrids } from './maps.js';
-import { renderLineChart } from './charts.js';
+import { renderLineChart, renderHorizontalBarChart } from './charts.js';
 import { initScrollObserver } from './scroll-observer.js';
 
 // Application State
@@ -192,37 +192,15 @@ function renderCurrentStep() {
       break;
       
     case 5:
-      // Step 5: Outliers Focus — show synced maps + inject the outlier table
-      if (activeSt === 'all') {
-        renderSyncedMaps("vis-container", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond);
-      } else {
-        const filteredStateGeo = {
-          type: 'FeatureCollection',
-          features: state.data.statesGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
-        };
-        const filteredDistGeo = {
-          type: 'FeatureCollection',
-          features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
-        };
-        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond);
-      }
-      // Inject outlier table content
+      // Step 5: Outliers — horizontal bar chart sorted ascending by SEARCH INTEREST
+      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search');
+      // Inject outlier table into narrative card
       d3.select("#outliers-container").html(conditionOutliers[cond] || '<p>No specific outlier records documented.</p>');
       break;
       
     case 6:
-      // Step 6: National Matrix — 3x3 small grids
-      renderSmallGrids("vis-container", state.data.statesGeoJSON, state.data.stateTrends, state.data.stateHealth, (selectedCond) => {
-        // Callback when clicking small grid cell: switch condition!
-        document.getElementById("condition-selector").value = selectedCond;
-        state.activeCondition = selectedCond;
-        updateNarrativeTexts();
-        
-        // Scroll back to Step 1 smoothly
-        const step1 = document.querySelector('.step[data-step="1"]');
-        step1.scrollIntoView({ behavior: 'smooth' });
-        renderCurrentStep();
-      });
+      // Step 6: National Matrix — horizontal bar chart sorted ascending by HEALTH METRIC
+      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'health');
       break;
   }
 }

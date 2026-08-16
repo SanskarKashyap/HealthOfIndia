@@ -305,7 +305,15 @@ header {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Bar chart row hover highlight */
+.bar-row:hover text {
+  fill: var(--text-primary) !important;
 }
 
 /* Narrative Panels */

@@ -416,3 +416,185 @@ function calculateCorrelation(x, y) {
   if (denX === 0 || denY === 0) return 0;
   return num / Math.sqrt(denX * denY);
 }
+
+/**
+ * Premium horizontal dual-bar chart: search interest (green) + health metric (blue).
+ * Sorted ascending by `sortBy` ('search' | 'health').
+ */
+export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, condition, sortBy) {
+  const container = d3.select(`#${containerId}`);
+  container.html('');
+
+  const config = conditionConfig[condition];
+
+  const rect = container.node().getBoundingClientRect();
+  const totalWidth  = rect.width;
+  const totalHeight = rect.height;
+
+  // Prepare & sort data
+  const raw = stateHealth.map(sh => {
+    const name = sh.state || sh.name;
+    const searchVal = (stateTrends[condition] || {})[name] || 0;
+    const healthVal  = sh[condition] || 0;
+    return { name, search: searchVal, health: healthVal };
+  }).filter(d => d.name);
+  raw.sort((a, b) => a[sortBy] - b[sortBy]);
+
+  const n = raw.length;
+
+  // Layout
+  const margin = { top: 54, right: 28, bottom: 36, left: 148 };
+  const chartW  = totalWidth - margin.left - margin.right;
+  const barBand = Math.max(10, Math.floor((totalHeight - margin.top - margin.bottom) / n));
+  const barH    = Math.max(4,  Math.floor(barBand * 0.38));
+  const gap     = Math.max(1,  barBand - barH * 2);
+  const chartH  = barBand * n;
+
+  const svg = container.append('svg')
+    .attr('width',  totalWidth)
+    .attr('height', margin.top + chartH + margin.bottom)
+    .style('overflow', 'visible');
+
+  // Title
+  const titleText = sortBy === 'search'
+    ? `Search Interest vs Clinical Reality — "${config.title}"`
+    : `Clinical Reality vs Search Interest — "${config.title}"`;
+
+  svg.append('text')
+    .attr('x', margin.left).attr('y', 20)
+    .attr('fill', 'var(--text-primary)')
+    .attr('font-family', 'var(--font-header)')
+    .attr('font-size', '0.95rem')
+    .attr('font-weight', 700)
+    .text(titleText);
+
+  svg.append('text')
+    .attr('x', margin.left).attr('y', 36)
+    .attr('fill', 'var(--text-muted)')
+    .attr('font-family', 'var(--font-body)')
+    .attr('font-size', '0.72rem')
+    .text(`Sorted ascending by ${sortBy === 'search' ? 'Search Interest' : config.healthLabel}`);
+
+  // Legend
+  [{label: 'Search Interest', color: 'var(--search-primary)'}, {label: config.healthLabel, color: 'var(--health-primary)'}]
+    .forEach((d, i) => {
+      const lx = margin.left + i * 170;
+      svg.append('rect').attr('x', lx).attr('y', 40).attr('width', 10).attr('height', 10)
+        .attr('rx', 2).attr('fill', d.color).attr('opacity', 0.85);
+      svg.append('text').attr('x', lx + 14).attr('y', 49)
+        .attr('fill', 'var(--text-secondary)').attr('font-family', 'var(--font-body)')
+        .attr('font-size', '0.72rem').text(d.label);
+    });
+
+  // Scales
+  const searchMax = d3.max(raw, d => d.search) || 100;
+  const healthMax = d3.max(raw, d => d.health) || 1;
+  const xSearch = d3.scaleLinear().domain([0, searchMax * 1.05]).range([0, chartW]);
+  const xHealth = d3.scaleLinear().domain([0, healthMax * 1.05]).range([0, chartW]);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+  // Grid lines
+  xSearch.ticks(5).forEach(tick => {
+    g.append('line')
+      .attr('x1', xSearch(tick)).attr('x2', xSearch(tick))
+      .attr('y1', 0).attr('y2', chartH)
+      .attr('stroke', 'rgba(255,255,255,0.05)').attr('stroke-width', 1);
+  });
+
+  // X-axis
+  g.append('g')
+    .attr('class', 'chart-axis')
+    .attr('transform', `translate(0, ${chartH})`)
+    .call(d3.axisBottom(xSearch).ticks(5))
+    .append('text')
+    .attr('x', chartW / 2).attr('y', 28)
+    .attr('fill', 'var(--text-secondary)')
+    .attr('font-family', 'var(--font-body)').attr('font-size', '0.72rem')
+    .attr('text-anchor', 'middle')
+    .text('→ Search Interest (0–100)');
+
+  const tooltip = d3.select('#map-tooltip');
+
+  // Row groups
+  const rows = g.selectAll('.bar-row')
+    .data(raw).enter().append('g')
+    .attr('class', 'bar-row')
+    .attr('transform', (d, i) => `translate(0, ${i * barBand})`);
+
+  // State name labels
+  rows.append('text')
+    .attr('x', -6).attr('y', barH + barH / 2 + gap / 2)
+    .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+    .attr('fill', 'var(--text-secondary)')
+    .attr('font-family', 'var(--font-body)')
+    .attr('font-size', Math.min(11, barBand * 0.7) + 'px')
+    .text(d => d.name);
+
+  // Search bars (top)
+  rows.append('rect')
+    .attr('y', 0).attr('height', barH).attr('rx', 2)
+    .attr('fill', 'var(--search-primary)').attr('opacity', 0.82).attr('width', 0)
+    .transition().duration(700).delay((d, i) => i * 14)
+    .attr('width', d => Math.max(2, xSearch(d.search)));
+
+  // Health bars (bottom)
+  rows.append('rect')
+    .attr('y', barH + gap).attr('height', barH).attr('rx', 2)
+    .attr('fill', 'var(--health-primary)').attr('opacity', 0.82).attr('width', 0)
+    .transition().duration(700).delay((d, i) => i * 14 + 80)
+    .attr('width', d => Math.max(2, xHealth(d.health)));
+
+  // Value labels — search
+  rows.append('text')
+    .attr('y', barH - 1).attr('dominant-baseline', 'auto')
+    .attr('fill', 'var(--search-primary)')
+    .attr('font-family', 'var(--font-body)')
+    .attr('font-size', Math.min(9, barH * 0.78) + 'px').attr('font-weight', 600)
+    .attr('opacity', 0).attr('x', 4)
+    .text(d => d.search)
+    .transition().delay((d, i) => i * 14 + 700).duration(250)
+    .attr('opacity', 1)
+    .attr('x', d => Math.max(2, xSearch(d.search)) + 4);
+
+  // Value labels — health
+  rows.append('text')
+    .attr('y', barH + gap + barH - 1).attr('dominant-baseline', 'auto')
+    .attr('fill', 'var(--health-primary)')
+    .attr('font-family', 'var(--font-body)')
+    .attr('font-size', Math.min(9, barH * 0.78) + 'px').attr('font-weight', 600)
+    .attr('opacity', 0).attr('x', 4)
+    .text(d => config.format(d.health))
+    .transition().delay((d, i) => i * 14 + 780).duration(250)
+    .attr('opacity', 1)
+    .attr('x', d => Math.max(2, xHealth(d.health)) + 4);
+
+  // Hover targets (full row)
+  rows.append('rect')
+    .attr('x', -margin.left).attr('y', -gap / 2)
+    .attr('width', totalWidth).attr('height', barBand)
+    .attr('fill', 'transparent')
+    .on('mouseover', function(event, d) {
+      d3.select(this.parentNode).selectAll('rect').filter((_, i) => i > 0)
+        .attr('opacity', 1).attr('filter', 'brightness(1.3)');
+      tooltip.style('opacity', 1).html(`
+        <div class="tooltip-title">${d.name}</div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Search Interest:</span>
+          <span class="tooltip-value" style="color:var(--search-primary)">${d.search} / 100</span>
+        </div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">${config.healthLabel}:</span>
+          <span class="tooltip-value" style="color:var(--health-primary)">${config.format(d.health)}</span>
+        </div>
+      `);
+    })
+    .on('mousemove', function(event) {
+      tooltip.style('left', `${event.pageX + 15}px`).style('top', `${event.pageY - 15}px`);
+    })
+    .on('mouseleave', function() {
+      d3.select(this.parentNode).selectAll('rect').filter((_, i) => i > 0)
+        .attr('opacity', 0.82).attr('filter', null);
+      tooltip.style('opacity', 0);
+    });
+}
