@@ -100,7 +100,7 @@ function updateNarrativeTexts() {
     .html(`Geographical search volume for <strong>"${config.title}"</strong> across India. Darker regions search for this term more frequently relative to their total search volume.`);
     
   d3.select("#health-map-narrative")
-    .html(`Actual clinical rates for <strong>"${config.title}"</strong>. This is based on NFHS-5 or state registers. Notice where clinical hotspots exist compared to internet curiosity.`);
+    .html(`Actual clinical metric for <strong>"${config.title}"</strong> (<em>${config.healthLabel}</em>). ${config.desc} Sourced from official NFHS-5 data across ~641 districts.`);
     
   d3.select("#synced-map-narrative")
     .html(`Compare search interest (left) directly with clinical footprint (right) for <strong>"${config.title}"</strong>. Hover over any region to see synced comparisons.`);
