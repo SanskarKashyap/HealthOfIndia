@@ -172,8 +172,8 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
     ? { type: 'FeatureCollection', features: rightFit }
     : districtsGeoJSON;
 
-  const leftProjection  = d3.geoMercator().fitSize([w - 20, h - 60], leftProjSrc);
-  const rightProjection = d3.geoMercator().fitSize([w - 20, h - 60], rightProjSrc);
+  const leftProjection  = d3.geoMercator().fitExtent([[24, 52], [w - 24, h - 52]], leftProjSrc);
+  const rightProjection = d3.geoMercator().fitExtent([[24, 52], [w - 24, h - 52]], rightProjSrc);
 
   const leftPath  = d3.geoPath().projection(leftProjection);
   const rightPath = d3.geoPath().projection(rightProjection);
@@ -201,8 +201,8 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const rightMax = d3.max(healthValues) || 100;
   const rightScale = getColorScale('health', rightMin, rightMax);
 
-  const leftGroup  = leftSvg.append("g").attr("transform", "translate(10, 30)");
-  const rightGroup = rightSvg.append("g").attr("transform", "translate(10, 30)");
+  const leftGroup  = leftSvg.append("g");
+  const rightGroup = rightSvg.append("g");
 
   // ── Left map ─────────────────────────────────────────────────
   let leftPaths;
