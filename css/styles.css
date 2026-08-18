@@ -359,8 +359,8 @@ header {
   will-change: opacity, transform;
 }
 
-/* Step 5 has a tall outliers table; prevent the card from being pushed above the viewport */
-.step[data-step="5"] {
+/* Step 4 has a tall outliers table; prevent the card from being pushed above the viewport */
+.step[data-step="4"] {
   justify-content: flex-start;
   padding-top: 120px;
 }

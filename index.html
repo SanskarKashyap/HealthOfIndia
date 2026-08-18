@@ -69,24 +69,11 @@
       <!-- Right Scrolling Narrative Panel -->
       <div class="narrative-panel">
 
-        <!-- Step 1: National Time Series -->
+        <!-- Step 1: State-level Search Map -->
         <div class="step active" data-step="1">
           <div class="step-card">
-            <div class="step-num">Step 1 — Search Anxiety over Time</div>
-            <h3>Public Query Patterns</h3>
-            <p>Google Search is a private mirror of our public anxieties. By looking at search interest over the last 24
-              months, we can track exactly when and how much interest spikes for different health concerns.</p>
-            <p id="time-series-narrative">Select a condition above to see national weekly and monthly trend variations.
-              Notice seasonal spikes (like Dengue during the monsoon) versus chronic steady lines (like Diabetes and
-              Hair Loss).</p>
-          </div>
-        </div>
-
-        <!-- Step 2: State-level Search Map -->
-        <div class="step" data-step="2">
-          <div class="step-card">
-            <div class="step-num" id="step-2-num">Step 2 — Search Intensity by State</div>
-            <h3 id="step-2-title">Where is the Concern?</h3>
+            <div class="step-num" id="step-1-num">Step 1 — Search Intensity by State</div>
+            <h3 id="step-1-title">Where is the Concern?</h3>
             <p>Geographical search interest (normalized to a 0–100 scale) shows where people search for this condition
               the most. High values don't represent absolute counts, but rather the proportion of total searches
               originating from that state.</p>
@@ -95,11 +82,11 @@
           </div>
         </div>
 
-        <!-- Step 3: District-level Health Map -->
-        <div class="step" data-step="3">
+        <!-- Step 2: District-level Health Map -->
+        <div class="step" data-step="2">
           <div class="step-card">
-            <div class="step-num" id="step-3-num">Step 3 — Clinical Outcomes Map</div>
-            <h3 id="step-3-title">What does the Data Say?</h3>
+            <div class="step-num" id="step-2-num">Step 2 — Clinical Outcomes Map</div>
+            <h3 id="step-2-title">What does the Data Say?</h3>
             <p>We map clinical metrics against the National Family Health Survey (NFHS-5) across ~641 districts. For
               Cancer, this measures the <strong>Screening Rate</strong>—the percentage of adults who have undergone
               clinical cervical, breast, or oral cancer screening tests.</p>
@@ -108,11 +95,11 @@
           </div>
         </div>
 
-        <!-- Step 4: Synced Side-by-Side maps -->
-        <div class="step" data-step="4">
+        <!-- Step 3: Synced Side-by-Side maps -->
+        <div class="step" data-step="3">
           <div class="step-card">
-            <div class="step-num" id="step-4-num">Step 4 — Syncing Search & Reality</div>
-            <h3 id="step-4-title">Interactive Correlation</h3>
+            <div class="step-num" id="step-3-num">Step 3 — Syncing Search & Reality</div>
+            <h3 id="step-3-title">Interactive Correlation</h3>
             <p>Hover on any state or district in either map. The matching unit in the corresponding map will highlight
               simultaneously, with tools showing their comparison.</p>
             <p id="synced-map-narrative">Observe the visual overlay. If search patterns matched reality, the dark green
@@ -121,17 +108,30 @@
           </div>
         </div>
 
-        <!-- Step 5: Outliers Focus -->
-        <div class="step" data-step="5">
+        <!-- Step 4: Outliers Focus -->
+        <div class="step" data-step="4">
           <div class="step-card">
-            <div class="step-num" id="step-5-num">Step 5 — Identifying Key Outliers</div>
-            <h3 id="step-5-title">Notable Mismatches</h3>
-            <p id="step-5-narrative">Let's look at the state-level outliers. In India, factors like language barriers, internet access,
+            <div class="step-num" id="step-4-num">Step 4 — Identifying Key Outliers</div>
+            <h3 id="step-4-title">Notable Mismatches</h3>
+            <p id="step-4-narrative">Let's look at the state-level outliers. In India, factors like language barriers, internet access,
               urbanization, and medical stigma create dramatic gaps between where people <em>search</em> and where the
               disease <em>actually</em> hits hardest.</p>
             <div id="outliers-container">
               <!-- Outliers table or content will be injected here -->
             </div>
+          </div>
+        </div>
+
+        <!-- Step 5: National Time Series -->
+        <div class="step" data-step="5">
+          <div class="step-card">
+            <div class="step-num" id="step-5-num">Step 5 — Search Anxiety over Time</div>
+            <h3 id="step-5-title">Public Query Patterns & Temporal Trajectory</h3>
+            <p>Google Search is a private mirror of our public anxieties. By looking at national search interest over the last 24
+              months, we can track exactly when and how much interest spikes for different health concerns.</p>
+            <p id="time-series-narrative">Select a condition above to see national weekly and monthly trend variations.
+              Notice seasonal spikes (like Dengue during the monsoon) versus chronic steady lines (like Diabetes and
+              Hair Loss).</p>
           </div>
         </div>
 
@@ -162,7 +162,7 @@
   <script src="https://cdn.jsdelivr.net/npm/topojson@3"></script>
 
   <!-- Main Application Script (ES6 Modules) -->
-  <script type="module" src="js/main.js?v=1.2"></script>
+  <script type="module" src="js/main.js?v=1.3"></script>
 </body>
 
 </html>
