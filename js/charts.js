@@ -519,10 +519,9 @@ export function renderHorizontalBarChart(containerId, items, trendsData, conditi
         .attr('font-size', '0.72rem').text(d.label);
     });
 
-  // Scales
-  const searchMax = d3.max(raw, d => d.search) || 100;
+  // Scales: Google Trends search interest is on a standard 0–100 scale
   const healthMax = d3.max(raw, d => d.health) || 1;
-  const xSearch = d3.scaleLinear().domain([0, searchMax * 1.05]).range([0, chartW]);
+  const xSearch = d3.scaleLinear().domain([0, 100]).range([0, chartW]);
   const xHealth = d3.scaleLinear().domain([0, healthMax * 1.05]).range([0, chartW]);
 
   const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
