@@ -5,6 +5,41 @@ import { renderSingleMap, renderSyncedMaps } from './maps.js?v=1.2';
 import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=1.2';
 import { initScrollObserver } from './scroll-observer.js?v=1.2';
 
+// --- Cookie & Local Storage Persistence Helpers ---
+export function setStoredPreference(key, value) {
+  try {
+    // Cookie with 1-year lifetime, Lax SameSite policy
+    const expires = new Date(Date.now() + 365 * 864e5).toUTCString();
+    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  } catch (e) {}
+
+  try {
+    // Also mirror to localStorage for instant synchronous read
+    localStorage.setItem(key, value);
+  } catch (e) {}
+}
+
+export function getStoredPreference(key) {
+  try {
+    // 1. Read from cookies
+    const cookieMatch = document.cookie
+      .split('; ')
+      .find(row => row.startsWith(`${encodeURIComponent(key)}=`));
+    if (cookieMatch) {
+      const val = decodeURIComponent(cookieMatch.split('=')[1]);
+      if (val) return val;
+    }
+  } catch (e) {}
+
+  try {
+    // 2. Fallback to localStorage
+    const val = localStorage.getItem(key);
+    if (val) return val;
+  } catch (e) {}
+
+  return null;
+}
+
 // Application State
 let state = {
   activeCondition: 'cancer',
@@ -24,6 +59,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     
     // Initialize components
     populateStateSelector();
+    
+    // Restore saved selections from cookies / storage
+    restoreSavedPreferences();
+
     setupEventHandlers();
     
     // Init scroll observer to drive scrollytelling
@@ -47,6 +86,27 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+// Restore saved condition & state preferences from cookies/storage
+function restoreSavedPreferences() {
+  const savedCondition = getStoredPreference('hoi_condition');
+  const savedState = getStoredPreference('hoi_state');
+
+  // Validate and restore Condition
+  if (savedCondition && conditionConfig[savedCondition]) {
+    state.activeCondition = savedCondition;
+    const condEl = document.getElementById("condition-selector");
+    if (condEl) condEl.value = savedCondition;
+  }
+
+  // Validate and restore State
+  const validStates = Array.from(new Set(state.data.districtHealth.map(d => d.state)));
+  if (savedState && (savedState === 'all' || validStates.includes(savedState))) {
+    state.activeState = savedState;
+    const stateEl = document.getElementById("state-selector");
+    if (stateEl) stateEl.value = savedState;
+  }
+}
+
 // Populate state dropdown options
 function populateStateSelector() {
   const states = Array.from(new Set(state.data.districtHealth.map(d => d.state))).sort();
@@ -65,6 +125,7 @@ function setupEventHandlers() {
   // Condition Dropdown
   document.getElementById("condition-selector").addEventListener("change", (e) => {
     state.activeCondition = e.target.value;
+    setStoredPreference('hoi_condition', state.activeCondition);
     updateNarrativeTexts();
     renderCurrentStep();
   });
@@ -72,6 +133,7 @@ function setupEventHandlers() {
   // State Filter Dropdown
   document.getElementById("state-selector").addEventListener("change", (e) => {
     state.activeState = e.target.value;
+    setStoredPreference('hoi_state', state.activeState);
     updateNarrativeTexts();
     renderCurrentStep();
   });
@@ -83,6 +145,8 @@ function setupEventHandlers() {
     document.getElementById("state-selector").value = 'all';
     state.activeCondition = 'cancer';
     state.activeState = 'all';
+    setStoredPreference('hoi_condition', 'cancer');
+    setStoredPreference('hoi_state', 'all');
     updateNarrativeTexts();
     
     // Smooth scroll back to top hero
@@ -273,6 +337,7 @@ function renderOutliersTable(outlierData, cond) {
         if (selectedState) {
           document.getElementById("state-selector").value = selectedState;
           state.activeState = selectedState;
+          setStoredPreference('hoi_state', selectedState);
           updateNarrativeTexts();
           renderCurrentStep();
         }
@@ -357,6 +422,7 @@ function renderOutliersTable(outlierData, cond) {
       d3.select("#reset-state-outliers-btn").on("click", () => {
         document.getElementById("state-selector").value = 'all';
         state.activeState = 'all';
+        setStoredPreference('hoi_state', 'all');
         updateNarrativeTexts();
         renderCurrentStep();
       });
@@ -378,6 +444,7 @@ function renderCurrentStep() {
     if (!selectedState) return;
     document.getElementById("state-selector").value = selectedState;
     state.activeState = selectedState;
+    setStoredPreference('hoi_state', selectedState);
     updateNarrativeTexts();
     renderCurrentStep();
   };
