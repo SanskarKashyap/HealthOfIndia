@@ -42,7 +42,7 @@ export function getStoredPreference(key) {
 
 // Application State
 let state = {
-  activeCondition: 'cancer',
+  activeCondition: 'obesity',
   activeState: 'all',
   currentStep: 1,
   data: null // Will hold loaded files
@@ -141,11 +141,11 @@ function setupEventHandlers() {
   // Logo Reset
   document.getElementById("logo").addEventListener("click", (e) => {
     e.preventDefault();
-    document.getElementById("condition-selector").value = 'cancer';
+    document.getElementById("condition-selector").value = 'obesity';
     document.getElementById("state-selector").value = 'all';
-    state.activeCondition = 'cancer';
+    state.activeCondition = 'obesity';
     state.activeState = 'all';
-    setStoredPreference('hoi_condition', 'cancer');
+    setStoredPreference('hoi_condition', 'obesity');
     setStoredPreference('hoi_state', 'all');
     updateNarrativeTexts();
     
