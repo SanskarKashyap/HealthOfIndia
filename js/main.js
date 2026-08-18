@@ -1,9 +1,9 @@
 // Main Bootstrapping & Coordination Module
-import { loadAllData } from './data-loader.js';
-import { conditionConfig } from './utils.js';
-import { renderSingleMap, renderSyncedMaps } from './maps.js';
-import { renderLineChart, renderHorizontalBarChart } from './charts.js';
-import { initScrollObserver } from './scroll-observer.js';
+import { loadAllData } from './data-loader.js?v=1.2';
+import { conditionConfig } from './utils.js?v=1.2';
+import { renderSingleMap, renderSyncedMaps } from './maps.js?v=1.2';
+import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=1.2';
+import { initScrollObserver } from './scroll-observer.js?v=1.2';
 
 // Application State
 let state = {
@@ -208,65 +208,160 @@ function updateNarrativeTexts() {
 }
 
 /**
- * Render the outliers table in Step 5 from precomputed data.
+ * Render the outliers table in Step 5 from precomputed data or district data.
  */
 function renderOutliersTable(outlierData, cond) {
   const config = conditionConfig[cond];
   const conclusions = state.data?.conclusions?.[cond];
   const healthLabel = conclusions?.healthLabel || config.healthLabel;
+  const activeSt = state.activeState;
 
-  let html = `<table class="outliers-table">
-    <thead>
-      <tr><th>State</th><th>Search Interest</th><th>${healthLabel}</th><th>Type</th><th>Insight</th></tr>
-    </thead>
-    <tbody>`;
+  if (activeSt === 'all') {
+    d3.select("#step-5-num").text("Step 5 — Identifying Key Outliers");
+    d3.select("#step-5-title").text("Notable Mismatches");
+    d3.select("#step-5-narrative").html(
+      "Let's look at the state-level outliers. In India, factors like language barriers, internet access, " +
+      "urbanization, and medical stigma create dramatic gaps between where people <em>search</em> and where the " +
+      "disease <em>actually</em> hits hardest."
+    );
 
-  // Show top 3 over-searchers
-  const overSearchers = (outlierData.overSearchers || []).slice(0, 3);
-  overSearchers.forEach(o => {
-    html += `<tr class="outlier-over" data-state="${o.state}">
-      <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
-      <td><span class="tag tag-over">Over-searching</span></td>
-      <td>${o.insight}</td>
-    </tr>`;
-  });
+    let html = `<table class="outliers-table">
+      <thead>
+        <tr><th>State</th><th>Search Interest</th><th>${healthLabel}</th><th>Type</th><th>Insight</th></tr>
+      </thead>
+      <tbody>`;
 
-  // Show top 3 under-searchers
-  const underSearchers = (outlierData.underSearchers || []).slice(0, 3);
-  underSearchers.forEach(o => {
-    html += `<tr class="outlier-under" data-state="${o.state}">
-      <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
-      <td><span class="tag tag-under">Under-searching</span></td>
-      <td>${o.insight}</td>
-    </tr>`;
-  });
+    // Show top 3 over-searchers
+    const overSearchers = (outlierData.overSearchers || []).slice(0, 3);
+    overSearchers.forEach(o => {
+      html += `<tr class="outlier-over" data-state="${o.state}">
+        <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+        <td><span class="tag tag-over">Over-searching</span></td>
+        <td>${o.insight}</td>
+      </tr>`;
+    });
 
-  // Show top 2 aligned
-  const aligned = (outlierData.aligned || []).slice(0, 2);
-  aligned.forEach(o => {
-    html += `<tr class="outlier-aligned" data-state="${o.state}">
-      <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
-      <td><span class="tag tag-aligned">Aligned</span></td>
-      <td>${o.insight}</td>
-    </tr>`;
-  });
+    // Show top 3 under-searchers
+    const underSearchers = (outlierData.underSearchers || []).slice(0, 3);
+    underSearchers.forEach(o => {
+      html += `<tr class="outlier-under" data-state="${o.state}">
+        <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+        <td><span class="tag tag-under">Under-searching</span></td>
+        <td>${o.insight}</td>
+      </tr>`;
+    });
 
-  html += `</tbody></table>`;
-  html += `<p class="outlier-summary"><em>${outlierData.summary}</em></p>`;
+    // Show top 2 aligned
+    const aligned = (outlierData.aligned || []).slice(0, 2);
+    aligned.forEach(o => {
+      html += `<tr class="outlier-aligned" data-state="${o.state}">
+        <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+        <td><span class="tag tag-aligned">Aligned</span></td>
+        <td>${o.insight}</td>
+      </tr>`;
+    });
 
-  const container = d3.select("#outliers-container");
-  container.html(html);
-  container.selectAll("tbody tr")
-    .style("cursor", "pointer")
-    .on("click", function() {
-      const selectedState = d3.select(this).attr("data-state");
-      if (selectedState) {
-        document.getElementById("state-selector").value = selectedState;
-        state.activeState = selectedState;
+    html += `</tbody></table>`;
+    html += `<p class="outlier-summary"><em>${outlierData.summary}</em></p>`;
+
+    const container = d3.select("#outliers-container");
+    container.html(html);
+    container.selectAll("tbody tr")
+      .style("cursor", "pointer")
+      .on("click", function() {
+        const selectedState = d3.select(this).attr("data-state");
+        if (selectedState) {
+          document.getElementById("state-selector").value = selectedState;
+          state.activeState = selectedState;
+          updateNarrativeTexts();
+          renderCurrentStep();
+        }
+      });
+  } else {
+    // District level breakdown for selected state
+    const distList = (state.data?.districtHealth || [])
+      .filter(d => d.state === activeSt)
+      .map(d => {
+        const sVal = (state.data.districtTrends[cond] || {})[d.id] ?? (state.data.districtTrends[cond] || {})[d.name] ?? 0;
+        const hVal = d[cond] || 0;
+        return {
+          id: d.id,
+          name: d.name,
+          state: d.state,
+          search: sVal,
+          health: hVal,
+          healthFormatted: config.format(hVal)
+        };
+      });
+
+    d3.select("#step-5-num").text(`Step 5 — Identifying Key Outliers (${activeSt})`);
+    d3.select("#step-5-title").text(`District Mismatches in ${activeSt}`);
+    d3.select("#step-5-narrative").html(
+      `District-level breakdown for <strong>${activeSt}</strong> (${distList.length} districts). ` +
+      `Comparing search interest vs. actual clinical outcomes (${healthLabel}). ` +
+      `The bar chart on the left illustrates district-by-district variance for "${config.title}".`
+    );
+
+    if (distList.length > 0) {
+      const meanSearch = d3.mean(distList, d => d.search) || 0;
+      const meanHealth = d3.mean(distList, d => d.health) || 0;
+      const stdSearch = d3.deviation(distList, d => d.search) || 1;
+      const stdHealth = d3.deviation(distList, d => d.health) || 1;
+
+      distList.forEach(d => {
+        const zSearch = (d.search - meanSearch) / (stdSearch || 1);
+        const zHealth = (d.health - meanHealth) / (stdHealth || 1);
+        d.gap = zSearch - zHealth;
+      });
+
+      const overDistricts = [...distList].sort((a, b) => b.gap - a.gap).slice(0, Math.min(3, distList.length));
+      const underDistricts = [...distList].sort((a, b) => a.gap - b.gap).slice(0, Math.min(3, distList.length));
+      const alignedDistricts = [...distList].sort((a, b) => Math.abs(a.gap) - Math.abs(b.gap)).slice(0, Math.min(2, distList.length));
+
+      let html = `<table class="outliers-table">
+        <thead>
+          <tr><th>District</th><th>Search Interest</th><th>${healthLabel}</th><th>Type</th></tr>
+        </thead>
+        <tbody>`;
+
+      overDistricts.forEach(o => {
+        html += `<tr class="outlier-over">
+          <td>${o.name}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+          <td><span class="tag tag-over">High Search</span></td>
+        </tr>`;
+      });
+
+      underDistricts.forEach(u => {
+        html += `<tr class="outlier-under">
+          <td>${u.name}</td><td>${u.search}</td><td>${u.healthFormatted}</td>
+          <td><span class="tag tag-under">High Burden</span></td>
+        </tr>`;
+      });
+
+      alignedDistricts.forEach(a => {
+        html += `<tr class="outlier-aligned">
+          <td>${a.name}</td><td>${a.search}</td><td>${a.healthFormatted}</td>
+          <td><span class="tag tag-aligned">Aligned</span></td>
+        </tr>`;
+      });
+
+      html += `</tbody></table>`;
+      html += `<div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <p class="outlier-summary" style="margin: 0; flex: 1;"><em>Showing top district mismatches within ${activeSt}.</em></p>
+        <button id="reset-state-outliers-btn" class="btn-reset-state" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; font-family: var(--font-body); cursor: pointer; transition: all 0.2s;">← Back to All States</button>
+      </div>`;
+
+      const container = d3.select("#outliers-container");
+      container.html(html);
+
+      d3.select("#reset-state-outliers-btn").on("click", () => {
+        document.getElementById("state-selector").value = 'all';
+        state.activeState = 'all';
         updateNarrativeTexts();
         renderCurrentStep();
-      }
-    });
+      });
+    }
+  }
 }
 
 // Render active visualization based on current step scroll position
@@ -364,7 +459,12 @@ function renderCurrentStep() {
       
     case 5:
       // Step 5: Outliers — horizontal bar chart sorted ascending by SEARCH INTEREST
-      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search', handleStateClick);
+      if (activeSt === 'all') {
+        renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search', handleStateClick, 'all');
+      } else {
+        const filteredDistricts = state.data.districtHealth.filter(d => d.state === activeSt);
+        renderHorizontalBarChart("vis-container", filteredDistricts, state.data.districtTrends, cond, 'search', null, activeSt);
+      }
       break;
   }
 }

@@ -419,34 +419,59 @@ function calculateCorrelation(x, y) {
 
 /**
  * Premium horizontal dual-bar chart: search interest (green) + health metric (blue).
+ * Supports both State-level (All India) and District-level (within a selected State).
  * Sorted ascending by `sortBy` ('search' | 'health').
  */
-export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, condition, sortBy, onClickState) {
+export function renderHorizontalBarChart(containerId, items, trendsData, condition, sortBy = 'search', onClickItem = null, stateName = 'all') {
   const container = d3.select(`#${containerId}`);
   container.html('');
 
   const config = conditionConfig[condition];
+  const isDistrictLevel = Boolean(stateName && stateName !== 'all');
 
   const rect = container.node().getBoundingClientRect();
-  const totalWidth  = rect.width;
-  const totalHeight = rect.height;
+  const totalWidth  = rect.width || 600;
+  const totalHeight = rect.height || 600;
 
   // Prepare & sort data
-  const raw = stateHealth.map(sh => {
-    const name = sh.state || sh.name;
-    const searchVal = (stateTrends[condition] || {})[name] || 0;
-    const healthVal  = sh[condition] || 0;
-    return { name, search: searchVal, health: healthVal };
+  const raw = items.map(d => {
+    const name = isDistrictLevel ? (d.name || d.id || d.state) : (d.state || d.name);
+    const condTrends = (trendsData && trendsData[condition]) ? trendsData[condition] : (trendsData || {});
+    const searchVal = condTrends[d.id] !== undefined
+      ? condTrends[d.id]
+      : (condTrends[name] !== undefined ? condTrends[name] : (condTrends[d.state] !== undefined ? condTrends[d.state] : 0));
+    const healthVal  = d[condition] !== undefined ? Number(d[condition]) : 0;
+    return {
+      id: d.id,
+      name,
+      state: d.state || name,
+      search: Number(searchVal),
+      health: healthVal
+    };
   }).filter(d => d.name);
+
+  if (raw.length === 0) {
+    container.append('div')
+      .attr('class', 'chart-empty-state')
+      .style('padding', '60px 20px')
+      .style('text-align', 'center')
+      .style('color', 'var(--text-muted)')
+      .text(`No district data available for ${isDistrictLevel ? stateName : 'this selection'}.`);
+    return;
+  }
+
   raw.sort((a, b) => a[sortBy] - b[sortBy]);
 
   const n = raw.length;
 
   // Layout
-  const margin = { top: 54, right: 32, bottom: 36, left: 156 };
+  const margin = { top: 56, right: 36, bottom: 36, left: isDistrictLevel ? 150 : 156 };
   const chartW  = totalWidth - margin.left - margin.right;
-  const minBarBand = 24; // Ensures clear vertical spacing between states
-  const barBand = Math.max(minBarBand, Math.floor((totalHeight - margin.top - margin.bottom) / n));
+  const minBarBand = 24; // Ensures clear vertical spacing between rows
+  const maxBarBand = 36; // Avoids excessively thick bars when district count is low
+  const availableH = totalHeight - margin.top - margin.bottom;
+  const computedBand = Math.floor(availableH / Math.max(1, n));
+  const barBand = n <= 10 ? Math.min(maxBarBand, Math.max(minBarBand, computedBand)) : Math.max(minBarBand, computedBand);
   const barH    = Math.max(5,  Math.floor(barBand * 0.35));
   const gap     = Math.max(2,  Math.floor(barBand * 0.12));
   const chartH  = barBand * n;
@@ -457,9 +482,11 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
     .style('overflow', 'visible');
 
   // Title
-  const titleText = sortBy === 'search'
-    ? `Search Interest vs Clinical Reality — "${config.title}"`
-    : `Clinical Reality vs Search Interest — "${config.title}"`;
+  const titleText = isDistrictLevel
+    ? `District Mismatches: ${stateName} — "${config.title}"`
+    : (sortBy === 'search'
+        ? `Search Interest vs Clinical Reality — "${config.title}"`
+        : `Clinical Reality vs Search Interest — "${config.title}"`);
 
   svg.append('text')
     .attr('x', margin.left).attr('y', 20)
@@ -469,20 +496,25 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
     .attr('font-weight', 700)
     .text(titleText);
 
+  // Subtitle
+  const subtitleText = isDistrictLevel
+    ? `Comparing ${n} districts in ${stateName} (Sorted ascending by ${sortBy === 'search' ? 'Search Interest' : config.healthLabel})`
+    : `All 36 States & UTs (Sorted ascending by ${sortBy === 'search' ? 'Search Interest' : config.healthLabel})`;
+
   svg.append('text')
     .attr('x', margin.left).attr('y', 36)
     .attr('fill', 'var(--text-muted)')
     .attr('font-family', 'var(--font-body)')
     .attr('font-size', '0.72rem')
-    .text(`Sorted ascending by ${sortBy === 'search' ? 'Search Interest' : config.healthLabel}`);
+    .text(subtitleText);
 
   // Legend
   [{label: 'Search Interest', color: 'var(--search-primary)'}, {label: config.healthLabel, color: 'var(--health-primary)'}]
     .forEach((d, i) => {
       const lx = margin.left + i * 170;
-      svg.append('rect').attr('x', lx).attr('y', 40).attr('width', 10).attr('height', 10)
+      svg.append('rect').attr('x', lx).attr('y', 42).attr('width', 10).attr('height', 10)
         .attr('rx', 2).attr('fill', d.color).attr('opacity', 0.85);
-      svg.append('text').attr('x', lx + 14).attr('y', 49)
+      svg.append('text').attr('x', lx + 14).attr('y', 51)
         .attr('fill', 'var(--text-secondary)').attr('font-family', 'var(--font-body)')
         .attr('font-size', '0.72rem').text(d.label);
     });
@@ -523,7 +555,7 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
     .attr('class', 'bar-row')
     .attr('transform', (d, i) => `translate(0, ${i * barBand})`);
 
-  // State name labels — formatted for legibility without overlap
+  // District / State name labels — formatted for legibility without overlap
   rows.append('text')
     .attr('x', -8).attr('y', barH + gap / 2)
     .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
@@ -576,12 +608,15 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
     .attr('x', -margin.left).attr('y', -gap / 2)
     .attr('width', totalWidth).attr('height', barBand)
     .attr('fill', 'transparent')
-    .style('cursor', onClickState ? 'pointer' : 'default')
+    .style('cursor', onClickItem ? 'pointer' : 'default')
     .on('mouseover', function(event, d) {
       d3.select(this.parentNode).selectAll('rect').filter((_, i) => i > 0)
         .attr('opacity', 1).attr('filter', 'brightness(1.3)');
+      const headerTitle = isDistrictLevel && d.name !== stateName
+        ? `${d.name}, ${stateName}`
+        : d.name;
       tooltip.style('opacity', 1).html(`
-        <div class="tooltip-title">${d.name}</div>
+        <div class="tooltip-title">${headerTitle}</div>
         <div class="tooltip-row">
           <span class="tooltip-label">Search Interest:</span>
           <span class="tooltip-value" style="color:var(--search-primary)">${d.search} / 100</span>
@@ -601,6 +636,6 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
       tooltip.style('opacity', 0);
     })
     .on('click', function(event, d) {
-      if (onClickState) onClickState(d.name);
+      if (onClickItem) onClickItem(d.name);
     });
 }
