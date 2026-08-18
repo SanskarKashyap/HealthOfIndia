@@ -458,6 +458,11 @@ header {
   stroke-width: 1.75px;
 }
 
+.state-borders-overlay,
+.state-borders-overlay path {
+  pointer-events: none !important;
+}
+
 /* Tooltip */
 .tooltip {
   position: absolute;

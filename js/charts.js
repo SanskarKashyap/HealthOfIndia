@@ -421,7 +421,7 @@ function calculateCorrelation(x, y) {
  * Premium horizontal dual-bar chart: search interest (green) + health metric (blue).
  * Sorted ascending by `sortBy` ('search' | 'health').
  */
-export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, condition, sortBy) {
+export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, condition, sortBy, onClickState) {
   const container = d3.select(`#${containerId}`);
   container.html('');
 
@@ -576,6 +576,7 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
     .attr('x', -margin.left).attr('y', -gap / 2)
     .attr('width', totalWidth).attr('height', barBand)
     .attr('fill', 'transparent')
+    .style('cursor', onClickState ? 'pointer' : 'default')
     .on('mouseover', function(event, d) {
       d3.select(this.parentNode).selectAll('rect').filter((_, i) => i > 0)
         .attr('opacity', 1).attr('filter', 'brightness(1.3)');
@@ -598,5 +599,8 @@ export function renderHorizontalBarChart(containerId, stateHealth, stateTrends, 
       d3.select(this.parentNode).selectAll('rect').filter((_, i) => i > 0)
         .attr('opacity', 0.82).attr('filter', null);
       tooltip.style('opacity', 0);
+    })
+    .on('click', function(event, d) {
+      if (onClickState) onClickState(d.name);
     });
 }

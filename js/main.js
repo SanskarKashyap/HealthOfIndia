@@ -227,7 +227,7 @@ function renderOutliersTable(outlierData, cond) {
   // Show top 3 over-searchers
   const overSearchers = (outlierData.overSearchers || []).slice(0, 3);
   overSearchers.forEach(o => {
-    html += `<tr class="outlier-over">
+    html += `<tr class="outlier-over" data-state="${o.state}">
       <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
       <td><span class="tag tag-over">Over-searching</span></td>
       <td>${o.insight}</td>
@@ -237,7 +237,7 @@ function renderOutliersTable(outlierData, cond) {
   // Show top 3 under-searchers
   const underSearchers = (outlierData.underSearchers || []).slice(0, 3);
   underSearchers.forEach(o => {
-    html += `<tr class="outlier-under">
+    html += `<tr class="outlier-under" data-state="${o.state}">
       <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
       <td><span class="tag tag-under">Under-searching</span></td>
       <td>${o.insight}</td>
@@ -247,7 +247,7 @@ function renderOutliersTable(outlierData, cond) {
   // Show top 2 aligned
   const aligned = (outlierData.aligned || []).slice(0, 2);
   aligned.forEach(o => {
-    html += `<tr class="outlier-aligned">
+    html += `<tr class="outlier-aligned" data-state="${o.state}">
       <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
       <td><span class="tag tag-aligned">Aligned</span></td>
       <td>${o.insight}</td>
@@ -257,7 +257,19 @@ function renderOutliersTable(outlierData, cond) {
   html += `</tbody></table>`;
   html += `<p class="outlier-summary"><em>${outlierData.summary}</em></p>`;
 
-  d3.select("#outliers-container").html(html);
+  const container = d3.select("#outliers-container");
+  container.html(html);
+  container.selectAll("tbody tr")
+    .style("cursor", "pointer")
+    .on("click", function() {
+      const selectedState = d3.select(this).attr("data-state");
+      if (selectedState) {
+        document.getElementById("state-selector").value = selectedState;
+        state.activeState = selectedState;
+        updateNarrativeTexts();
+        renderCurrentStep();
+      }
+    });
 }
 
 // Render active visualization based on current step scroll position
@@ -331,7 +343,7 @@ function renderCurrentStep() {
           .filter(d => d.state === activeSt)
           .forEach(d => mappedHealth.set(d.id, d[cond]));
 
-        renderSingleMap("vis-container", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, handleStateClick);
+        renderSingleMap("vis-container", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, handleStateClick, 'health');
       }
       break;
       
@@ -355,12 +367,12 @@ function renderCurrentStep() {
       
     case 5:
       // Step 5: Outliers — horizontal bar chart sorted ascending by SEARCH INTEREST
-      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search');
+      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search', handleStateClick);
       break;
       
     case 6:
       // Step 6: National Matrix — horizontal bar chart sorted ascending by HEALTH METRIC
-      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'health');
+      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'health', handleStateClick);
       break;
   }
 }
