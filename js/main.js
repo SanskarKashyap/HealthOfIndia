@@ -1,7 +1,7 @@
 // Main Bootstrapping & Coordination Module
 import { loadAllData } from './data-loader.js';
 import { conditionConfig } from './utils.js';
-import { renderSingleMap, renderSyncedMaps, renderSmallGrids } from './maps.js';
+import { renderSingleMap, renderSyncedMaps } from './maps.js';
 import { renderLineChart, renderHorizontalBarChart } from './charts.js';
 import { initScrollObserver } from './scroll-observer.js';
 
@@ -205,9 +205,6 @@ function updateNarrativeTexts() {
   // --- Step 5: Outliers ---
   const step5 = conclusions.steps['5_outliers'];
   renderOutliersTable(step5, cond);
-
-  // --- Step 6: National Matrix summary (shown in narrative) ---
-  // (Step 6 narrative is static in HTML but we could update it too if needed)
 }
 
 /**
@@ -368,11 +365,6 @@ function renderCurrentStep() {
     case 5:
       // Step 5: Outliers — horizontal bar chart sorted ascending by SEARCH INTEREST
       renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search', handleStateClick);
-      break;
-      
-    case 6:
-      // Step 6: National Matrix — horizontal bar chart sorted ascending by HEALTH METRIC
-      renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'health', handleStateClick);
       break;
   }
 }
