@@ -1,6 +1,6 @@
 // Main Bootstrapping & Coordination Module
 import { loadAllData } from './data-loader.js';
-import { conditionConfig, conditionOutliers } from './utils.js';
+import { conditionConfig } from './utils.js';
 import { renderSingleMap, renderSyncedMaps, renderSmallGrids } from './maps.js';
 import { renderLineChart, renderHorizontalBarChart } from './charts.js';
 import { initScrollObserver } from './scroll-observer.js';
@@ -27,13 +27,20 @@ window.addEventListener("DOMContentLoaded", async () => {
     setupEventHandlers();
     
     // Init scroll observer to drive scrollytelling
+    // Use a pending-render flag so rapid scrolling never queues multiple D3 redraws.
+    let pendingRender = null;
     initScrollObserver((stepNum) => {
       state.currentStep = stepNum;
-      renderCurrentStep();
+      if (pendingRender) cancelAnimationFrame(pendingRender);
+      pendingRender = requestAnimationFrame(() => {
+        pendingRender = null;
+        renderCurrentStep();
+      });
     });
 
     // Initial render
     renderCurrentStep();
+    updateNarrativeTexts();
   } catch (err) {
     console.error("Critical error booting application:", err);
     d3.select("#vis-container").html("<div class='error'>Error loading application. Please check console logs.</div>");
@@ -65,6 +72,7 @@ function setupEventHandlers() {
   // State Filter Dropdown
   document.getElementById("state-selector").addEventListener("change", (e) => {
     state.activeState = e.target.value;
+    updateNarrativeTexts();
     renderCurrentStep();
   });
 
@@ -88,22 +96,168 @@ function setupEventHandlers() {
   }, 250));
 }
 
-// Update narrative panels with condition-specific contextual text
+/**
+ * Update narrative panels with precomputed data-driven conclusions.
+ * All text is fetched from the conclusions JSON — no guessing or templates.
+ */
 function updateNarrativeTexts() {
   const cond = state.activeCondition;
+  const conclusions = state.data?.conclusions?.[cond];
+  if (!conclusions) return;
+
   const config = conditionConfig[cond];
-  
-  d3.select("#time-series-narrative")
-    .html(`Currently showing Google search interest for <strong>"${config.title}"</strong>. ${config.desc}`);
-    
-  d3.select("#search-map-narrative")
-    .html(`Geographical search volume for <strong>"${config.title}"</strong> across India. Darker regions search for this term more frequently relative to their total search volume.`);
-    
-  d3.select("#health-map-narrative")
-    .html(`Actual clinical metric for <strong>"${config.title}"</strong> (<em>${config.healthLabel}</em>). ${config.desc} Sourced from official NFHS-5 data across ~641 districts.`);
-    
-  d3.select("#synced-map-narrative")
-    .html(`Compare search interest (left) directly with clinical footprint (right) for <strong>"${config.title}"</strong>. Hover over any region to see synced comparisons.`);
+  const activeSt = state.activeState;
+
+  // --- Step 1: Time Trends ---
+  const step1 = conclusions.steps['1_timeTrends'];
+  const step1Metrics = step1.metrics;
+  d3.select("#time-series-narrative").html(
+    `<strong>Data-Driven Insight:</strong> ${step1.summary}`
+  );
+
+  // --- Step 2: Search Map ---
+  const step2 = conclusions.steps['2_searchMap'];
+  if (activeSt === 'all') {
+    d3.select("#step-2-num").text("Step 2 — District Search Breakdown");
+    d3.select("#step-2-title").text("Where is the Concern?");
+    d3.select("#search-map-narrative").html(
+      `<strong>Data-Driven Insight:</strong> ${step2.summary}`
+    );
+  } else {
+    d3.select("#step-2-num").text(`Step 2 — District Search Breakdown (${activeSt})`);
+    d3.select("#step-2-title").text(`District-Wise Search Interest in ${activeSt}`);
+    const stateInsight = step2.stateInsights?.find(s => s.state === activeSt);
+    if (stateInsight) {
+      d3.select("#search-map-narrative").html(
+        `<strong>${activeSt} (District Division):</strong> Displaying district-wise Google Trends search interest division for ${activeSt}. ` +
+        `State average search interest is <strong>${stateInsight.searchInterest}</strong>/100 (tier: ${stateInsight.tier}). ` +
+        `National average: ${step2.metrics.nationalAverage}. ` +
+        `${stateInsight.searchInterest > step2.metrics.nationalAverage 
+          ? `Overall state level is <strong>${(stateInsight.searchInterest - step2.metrics.nationalAverage).toFixed(0)} points above</strong> national average.` 
+          : `Overall state level is <strong>${(step2.metrics.nationalAverage - stateInsight.searchInterest).toFixed(0)} points below</strong> national average.`}`
+      );
+    }
+  }
+
+  // --- Step 3: Health/Clinical Map ---
+  const step3 = conclusions.steps['3_healthMap'];
+  if (activeSt === 'all') {
+    d3.select("#step-3-num").text("Step 3 — Clinical Outcomes Map");
+    d3.select("#step-3-title").text("What does the Data Say?");
+    d3.select("#health-map-narrative").html(
+      `<strong>Data-Driven Insight:</strong> ${step3.summary}`
+    );
+  } else {
+    d3.select("#step-3-num").text(`Step 3 — District Clinical Outcomes (${activeSt})`);
+    d3.select("#step-3-title").text(`Clinical Burden by District in ${activeSt}`);
+    const stateHealth = step3.stateInsights?.find(s => s.state === activeSt);
+    if (stateHealth) {
+      const avgVal = step3.metrics.nationalAverage;
+      const diff = stateHealth.healthValue - avgVal;
+      const aboveBelowText = diff > 0 
+        ? `<strong>${Math.abs(diff).toFixed(1)} above</strong> the national average (${avgVal})` 
+        : `<strong>${Math.abs(diff).toFixed(1)} below</strong> the national average (${avgVal})`;
+      d3.select("#health-map-narrative").html(
+        `<strong>${activeSt}:</strong> ${conclusions.healthLabel}: <strong>${stateHealth.formattedValue}</strong> — ` +
+        `${aboveBelowText}. ${conclusions.healthInterpretation}.`
+      );
+    }
+  }
+
+  // --- Step 4: Synced Maps / Correlation ---
+  const step4 = conclusions.steps['4_correlation'];
+  if (activeSt === 'all') {
+    d3.select("#step-4-num").text("Step 4 — Syncing Search & Reality");
+    d3.select("#step-4-title").text("Interactive Correlation");
+    d3.select("#synced-map-narrative").html(
+      `<strong>Data-Driven Insight:</strong> ${step4.summary}`
+    );
+  } else {
+    d3.select("#step-4-num").text(`Step 4 — Syncing Search & Reality (${activeSt})`);
+    d3.select("#step-4-title").text(`District Search vs. Clinical Reality in ${activeSt}`);
+    const inMismatch = step4.mismatches?.find(m => m.state === activeSt);
+    const inAligned = step4.alignments?.find(a => a.state === activeSt);
+    if (inMismatch) {
+      d3.select("#synced-map-narrative").html(
+        `<strong>${activeSt} (District Synced View):</strong> Both maps are rendered at the district level for ${activeSt}. ` +
+        `The left map displays district-wise Google Trends search interest (exact same heatmap as Step 2). ` +
+        `The right map displays district-wise clinical outcomes (NFHS-5). ` +
+        `This state is a <strong>${inMismatch.gapType === 'over-searching' ? 'high-anxiety outlier' : 'silent-burden state'}</strong> ` +
+        `(Search: ${inMismatch.search}, Clinical: ${inMismatch.healthFormatted}).`
+      );
+    } else if (inAligned) {
+      d3.select("#synced-map-narrative").html(
+        `<strong>${activeSt} (District Synced View):</strong> Both maps are rendered at the district level for ${activeSt}. ` +
+        `The left map displays district-wise Google Trends search interest (exact same heatmap as Step 2). ` +
+        `The right map displays district-wise clinical outcomes (NFHS-5). ` +
+        `Search (${inAligned.search}) and clinical data (${inAligned.healthFormatted}) are <strong>well-aligned</strong>.`
+      );
+    } else {
+      d3.select("#synced-map-narrative").html(
+        `<strong>${activeSt} (District Synced View):</strong> Both maps are rendered at the district level for ${activeSt}. ` +
+        `The left map displays district-wise Google Trends search interest (exact same heatmap as Step 2). ` +
+        `The right map displays district-wise clinical outcomes (NFHS-5). ` +
+        `Overall correlation for "${config.title}" is <strong>${step4.metrics.correlationLabel}</strong> (r = ${step4.metrics.correlation}).`
+      );
+    }
+  }
+
+  // --- Step 5: Outliers ---
+  const step5 = conclusions.steps['5_outliers'];
+  renderOutliersTable(step5, cond);
+
+  // --- Step 6: National Matrix summary (shown in narrative) ---
+  // (Step 6 narrative is static in HTML but we could update it too if needed)
+}
+
+/**
+ * Render the outliers table in Step 5 from precomputed data.
+ */
+function renderOutliersTable(outlierData, cond) {
+  const config = conditionConfig[cond];
+  const conclusions = state.data?.conclusions?.[cond];
+  const healthLabel = conclusions?.healthLabel || config.healthLabel;
+
+  let html = `<table class="outliers-table">
+    <thead>
+      <tr><th>State</th><th>Search Interest</th><th>${healthLabel}</th><th>Type</th><th>Insight</th></tr>
+    </thead>
+    <tbody>`;
+
+  // Show top 3 over-searchers
+  const overSearchers = (outlierData.overSearchers || []).slice(0, 3);
+  overSearchers.forEach(o => {
+    html += `<tr class="outlier-over">
+      <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+      <td><span class="tag tag-over">Over-searching</span></td>
+      <td>${o.insight}</td>
+    </tr>`;
+  });
+
+  // Show top 3 under-searchers
+  const underSearchers = (outlierData.underSearchers || []).slice(0, 3);
+  underSearchers.forEach(o => {
+    html += `<tr class="outlier-under">
+      <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+      <td><span class="tag tag-under">Under-searching</span></td>
+      <td>${o.insight}</td>
+    </tr>`;
+  });
+
+  // Show top 2 aligned
+  const aligned = (outlierData.aligned || []).slice(0, 2);
+  aligned.forEach(o => {
+    html += `<tr class="outlier-aligned">
+      <td>${o.state}</td><td>${o.search}</td><td>${o.healthFormatted}</td>
+      <td><span class="tag tag-aligned">Aligned</span></td>
+      <td>${o.insight}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  html += `<p class="outlier-summary"><em>${outlierData.summary}</em></p>`;
+
+  d3.select("#outliers-container").html(html);
 }
 
 // Render active visualization based on current step scroll position
@@ -115,6 +269,15 @@ function renderCurrentStep() {
   const activeSt = state.activeState;
   const step = state.currentStep;
 
+
+  const handleStateClick = (selectedState) => {
+    if (!selectedState) return;
+    document.getElementById("state-selector").value = selectedState;
+    state.activeState = selectedState;
+    updateNarrativeTexts();
+    renderCurrentStep();
+  };
+
   // Render correct panel based on step index
   switch(step) {
     case 1:
@@ -123,16 +286,15 @@ function renderCurrentStep() {
       break;
       
     case 2:
-      // Step 2: Search Map (State level / District level when zoomed in)
-      // If a state is selected, filter/zoom to show district search trends for that state; else show All India
+      // Step 2: Search Map (District level across all of India)
       if (activeSt === 'all') {
-        const trendsMap = new Map(Object.entries(state.data.stateTrends[cond]));
-        renderSingleMap("vis-container", state.data.statesGeoJSON, trendsMap, 'state', cond, `Google Trends: Search Volume for "${conditionConfig[cond].title}"`, (selectedState) => {
-          // Callback when clicking a state
-          document.getElementById("state-selector").value = selectedState;
-          state.activeState = selectedState;
-          renderCurrentStep();
+        const trendsMap = new Map();
+        const distTrends = state.data.districtTrends[cond] || {};
+        state.data.districtsGeoJSON.features.forEach(f => {
+          const key = f.properties.DISTRICT;
+          trendsMap.set(key, distTrends[key] !== undefined ? distTrends[key] : 0);
         });
+        renderSingleMap("vis-container", state.data.districtsGeoJSON, trendsMap, 'district', cond, `Google Trends: District Search Interest for "${conditionConfig[cond].title}"`, handleStateClick, 'search', state.data.statesGeoJSON);
       } else {
         // Zoom in to show district-level search trends in the selected state
         const stateDistGeo = {
@@ -146,7 +308,7 @@ function renderCurrentStep() {
           trendsMap.set(key, distTrends[key] !== undefined ? distTrends[key] : 0);
         });
 
-        renderSingleMap("vis-container", stateDistGeo, trendsMap, 'district', cond, `District Search Volume: ${activeSt}`, null, 'search');
+        renderSingleMap("vis-container", stateDistGeo, trendsMap, 'district', cond, `District Search Volume: ${activeSt}`, handleStateClick, 'search');
       }
       break;
       
@@ -157,7 +319,7 @@ function renderCurrentStep() {
         const mappedHealth = new Map();
         state.data.districtHealth.forEach(d => mappedHealth.set(d.id, d[cond]));
         
-        renderSingleMap("vis-container", state.data.districtsGeoJSON, mappedHealth, 'district', cond, `NFHS-5 Outcomes: "${conditionConfig[cond].title}"`, null);
+        renderSingleMap("vis-container", state.data.districtsGeoJSON, mappedHealth, 'district', cond, `NFHS-5 Outcomes: "${conditionConfig[cond].title}"`, handleStateClick, 'health', state.data.statesGeoJSON);
       } else {
         // Zoom in to districts of selected state
         const filteredDistGeo = {
@@ -169,14 +331,14 @@ function renderCurrentStep() {
           .filter(d => d.state === activeSt)
           .forEach(d => mappedHealth.set(d.id, d[cond]));
 
-        renderSingleMap("vis-container", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, null);
+        renderSingleMap("vis-container", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, handleStateClick);
       }
       break;
       
     case 4:
-      // Step 4: Side-by-Side synced maps
+      // Step 4: Side-by-Side synced maps (always district level on both sides)
       if (activeSt === 'all') {
-        renderSyncedMaps("vis-container", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond);
+        renderSyncedMaps("vis-container", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond, state.data.districtTrends, handleStateClick);
       } else {
         // Filter side-by-side to selected state; pass districtTrends so left map shows district search data
         const filteredStateGeo = {
@@ -187,15 +349,13 @@ function renderCurrentStep() {
           type: 'FeatureCollection',
           features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
         };
-        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond, state.data.districtTrends);
+        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond, state.data.districtTrends, handleStateClick);
       }
       break;
       
     case 5:
       // Step 5: Outliers — horizontal bar chart sorted ascending by SEARCH INTEREST
       renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search');
-      // Inject outlier table into narrative card
-      d3.select("#outliers-container").html(conditionOutliers[cond] || '<p>No specific outlier records documented.</p>');
       break;
       
     case 6:

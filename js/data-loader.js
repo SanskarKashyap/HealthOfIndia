@@ -9,7 +9,8 @@ export async function loadAllData() {
       districtHealth,
       stateTrends,
       districtTrends,
-      nationalTimeTrends
+      nationalTimeTrends,
+      conclusions
     ] = await Promise.all([
       d3.json('assets/geo/states.geojson'),
       d3.json('assets/geo/districts.geojson'),
@@ -17,7 +18,8 @@ export async function loadAllData() {
       d3.json('assets/health/district_data.json'),
       d3.json('assets/trends/state_trends.json'),
       d3.json('assets/trends/district_trends.json'),
-      d3.json('assets/trends/national_time_trends.json')
+      d3.json('assets/trends/national_time_trends.json'),
+      d3.json('assets/conclusions.json')
     ]);
 
     // Create convenient maps for rapid lookup
@@ -32,6 +34,7 @@ export async function loadAllData() {
       stateTrends,
       districtTrends,
       nationalTimeTrends,
+      conclusions,
       stateHealthMap,
       districtHealthMap
     };

@@ -4,7 +4,7 @@ import { conditionConfig, getColorScale } from './utils.js';
 // Setup common tooltip select
 const tooltip = d3.select("#map-tooltip");
 
-export function renderSingleMap(containerId, geojsonData, dataMap, type, field, title, onClickRegion, forcedPalette) {
+export function renderSingleMap(containerId, geojsonData, dataMap, type, field, title, onClickRegion, forcedPalette, statesGeoJSON) {
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
@@ -24,14 +24,19 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
     .attr("class", "map-title")
     .text(title);
 
-  // Setup Projection (Focus on mainland for national maps to prevent islands from shrinking it)
-  const fitFeatures = geojsonData.features.filter(f => {
-    const name = f.properties.ST_NM;
-    return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
-  });
-  const projectionGeoJSON = (geojsonData.features.length > 5 && fitFeatures.length > 0) 
-    ? { type: 'FeatureCollection', features: fitFeatures } 
-    : geojsonData;
+  // Setup Projection (Focus on mainland for national maps; fit exact state for single-state maps)
+  let projectionGeoJSON;
+  if (type === 'state' || geojsonData.features.length > 50) {
+    const fitFeatures = geojsonData.features.filter(f => {
+      const name = f.properties.ST_NM;
+      return name !== 'Andaman & Nicobar Island' && name !== 'Lakshadweep' && name !== 'Andaman & Nicobar Islands';
+    });
+    projectionGeoJSON = (fitFeatures.length > 0)
+      ? { type: 'FeatureCollection', features: fitFeatures }
+      : geojsonData;
+  } else {
+    projectionGeoJSON = geojsonData;
+  }
 
   const projection = d3.geoMercator()
     .fitSize([width - 20, height - 60], projectionGeoJSON);
@@ -58,13 +63,13 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   const mapGroup = svg.append("g")
     .attr("transform", "translate(10, 30)");
 
-  // Draw features
-  const paths = mapGroup.selectAll("path")
+  // Draw district/state features
+  const paths = mapGroup.selectAll("path.region-path")
     .data(geojsonData.features)
     .enter()
     .append("path")
+    .attr("class", `region-path ${type === 'state' ? 'state' : 'district'}`)
     .attr("d", pathGenerator)
-    .attr("class", type === 'state' ? 'state' : 'district')
     .attr("id", f => {
       const idKey = type === 'state' ? f.properties.ST_NM : f.properties.DISTRICT;
       return `region-${idKey.replace(/\s+/g, '-')}`;
@@ -75,14 +80,30 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
       return (val !== undefined && val !== null) ? colorScale(val) : "#1e293b";
     });
 
+  // State border overlay when rendering district maps across India
+  if (statesGeoJSON && statesGeoJSON.features) {
+    mapGroup.append("g")
+      .attr("class", "state-borders-overlay")
+      .selectAll("path")
+      .data(statesGeoJSON.features)
+      .enter()
+      .append("path")
+      .attr("d", pathGenerator)
+      .style("fill", "none")
+      .style("stroke", isSearch ? "#139492ff" : "#1448c2ff")
+      .style("stroke-width", "1.5px")
+      .style("stroke-linejoin", "round")
+      .style("pointer-events", "none");
+  }
+
   // Interactivity
-  paths.on("mouseover", function(event, d) {
+  paths.on("mouseover", function (event, d) {
     const regionName = type === 'state' ? d.properties.ST_NM : d.properties.Dist_name;
     const key = type === 'state' ? d.properties.ST_NM : d.properties.DISTRICT;
     const val = dataMap.get(key);
     const label = isSearch ? 'Search Interest' : conditionConfig[field].healthLabel;
-    const formattedVal = (val !== undefined && val !== null) 
-      ? (isSearch ? `${val} / 100` : conditionConfig[field].format(val)) 
+    const formattedVal = (val !== undefined && val !== null)
+      ? (isSearch ? `${val} / 100` : conditionConfig[field].format(val))
       : 'N/A';
 
     d3.select(this)
@@ -102,23 +123,23 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
         </div>
       `);
   })
-  .on("mousemove", function(event) {
-    tooltip
-      .style("left", `${event.pageX + 15}px`)
-      .style("top", `${event.pageY - 15}px`);
-  })
-  .on("mouseleave", function() {
-    d3.select(this)
-      .transition()
-      .duration(150)
-      .style("stroke", "var(--bg-color)")
-      .style("stroke-width", type === 'state' ? "0.5px" : "0.25px");
+    .on("mousemove", function (event) {
+      tooltip
+        .style("left", `${event.pageX + 15}px`)
+        .style("top", `${event.pageY - 15}px`);
+    })
+    .on("mouseleave", function () {
+      d3.select(this)
+        .transition()
+        .duration(150)
+        .style("stroke", "var(--bg-color)")
+        .style("stroke-width", type === 'state' ? "0.5px" : "0.25px");
 
-    tooltip.style("opacity", 0);
-  });
+      tooltip.style("opacity", 0);
+    });
 
   if (onClickRegion) {
-    paths.on("click", function(event, d) {
+    paths.on("click", function (event, d) {
       onClickRegion(d.properties.ST_NM);
     });
   }
@@ -127,12 +148,13 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   drawLegend(container, paletteType, minVal, maxVal, isSearch ? 'Search Interest' : conditionConfig[field].healthLabel, isSearch ? '' : conditionConfig[field].unit);
 }
 
-export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, stateTrends, districtHealth, condition, districtTrends) {
+export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, stateTrends, districtHealth, condition, districtTrends, onStateClick) {
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
   // Detect zoom mode: a single state is selected
   const isZoomed = statesGeoJSON.features.length <= 2;
+  const useDistrictSearch = Boolean(districtTrends);
 
   // Renders container as side by side grid
   const wrapper = container.append("div")
@@ -145,37 +167,44 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const w = leftRect.width;
   const h = leftRect.height;
 
-  const leftTitle  = isZoomed ? `District Search Interest` : `Google Trends Search Interest`;
-  const rightTitle = `Clinical Health Outcome (NFHS-5)`;
+  const stateNameHeader = isZoomed && districtsGeoJSON.features.length > 0 ? districtsGeoJSON.features[0].properties.ST_NM : null;
+  const leftTitle = isZoomed
+    ? `District Search Interest (${stateNameHeader || ''})`
+    : `District Search Interest (Google Trends)`;
+  const rightTitle = isZoomed
+    ? `Clinical Health Outcome (${stateNameHeader || ''})`
+    : `Clinical Health Outcome (NFHS-5)`;
+
   leftPanel.append("div").attr("class", "map-title").text(leftTitle);
   rightPanel.append("div").attr("class", "map-title").text(rightTitle);
 
-  const leftSvg  = leftPanel.append("svg").attr("width", w).attr("height", h);
+  const leftSvg = leftPanel.append("svg").attr("width", w).attr("height", h);
   const rightSvg = rightPanel.append("svg").attr("width", w).attr("height", h);
 
   // ── Projections ─────────────────────────────────────────────
-  // Left projection: use districts geo when zoomed, states otherwise
-  const leftGeoForProj = isZoomed ? districtsGeoJSON : statesGeoJSON;
-  const leftFit = leftGeoForProj.features.filter(f => {
-    const nm = f.properties.ST_NM;
-    return nm !== 'Andaman & Nicobar Island' && nm !== 'Lakshadweep' && nm !== 'Andaman & Nicobar Islands';
-  });
-  const leftProjSrc = (leftGeoForProj.features.length > 5 && leftFit.length > 0)
-    ? { type: 'FeatureCollection', features: leftFit }
-    : leftGeoForProj;
+  let leftProjSrc, rightProjSrc;
+  if (isZoomed) {
+    leftProjSrc = districtsGeoJSON;
+    rightProjSrc = districtsGeoJSON;
+  } else {
+    const leftGeoForProj = useDistrictSearch ? districtsGeoJSON : statesGeoJSON;
+    const leftFit = leftGeoForProj.features.filter(f => {
+      const nm = f.properties.ST_NM;
+      return nm !== 'Andaman & Nicobar Island' && nm !== 'Lakshadweep' && nm !== 'Andaman & Nicobar Islands';
+    });
+    leftProjSrc = leftFit.length > 0 ? { type: 'FeatureCollection', features: leftFit } : leftGeoForProj;
 
-  const rightFit = districtsGeoJSON.features.filter(f => {
-    const nm = f.properties.ST_NM;
-    return nm !== 'Andaman & Nicobar Island' && nm !== 'Lakshadweep' && nm !== 'Andaman & Nicobar Islands';
-  });
-  const rightProjSrc = (districtsGeoJSON.features.length > 5 && rightFit.length > 0)
-    ? { type: 'FeatureCollection', features: rightFit }
-    : districtsGeoJSON;
+    const rightFit = districtsGeoJSON.features.filter(f => {
+      const nm = f.properties.ST_NM;
+      return nm !== 'Andaman & Nicobar Island' && nm !== 'Lakshadweep' && nm !== 'Andaman & Nicobar Islands';
+    });
+    rightProjSrc = rightFit.length > 0 ? { type: 'FeatureCollection', features: rightFit } : districtsGeoJSON;
+  }
 
-  const leftProjection  = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], leftProjSrc);
+  const leftProjection = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], leftProjSrc);
   const rightProjection = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], rightProjSrc);
 
-  const leftPath  = d3.geoPath().projection(leftProjection);
+  const leftPath = d3.geoPath().projection(leftProjection);
   const rightPath = d3.geoPath().projection(rightProjection);
 
   // ── Color scales ─────────────────────────────────────────────
@@ -183,13 +212,13 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
 
   // Left scale — search
   let leftMin, leftMax, leftScale;
-  if (isZoomed && districtTrends) {
-    // Use district search values for the selected state
+  if (useDistrictSearch) {
+    // Use district search values across districts
     const dVals = districtsGeoJSON.features.map(f => (districtTrends[condition] || {})[f.properties.DISTRICT] || 0);
     leftMin = d3.min(dVals) || 0;
     leftMax = d3.max(dVals) || 100;
   } else {
-    const sVals = Object.values(stateTrends[condition]);
+    const sVals = Object.values(stateTrends[condition] || {});
     leftMin = d3.min(sVals) || 0;
     leftMax = d3.max(sVals) || 100;
   }
@@ -201,13 +230,13 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const rightMax = d3.max(healthValues) || 100;
   const rightScale = getColorScale('health', rightMin, rightMax);
 
-  const leftGroup  = leftSvg.append("g");
+  const leftGroup = leftSvg.append("g");
   const rightGroup = rightSvg.append("g");
 
   // ── Left map ─────────────────────────────────────────────────
   let leftPaths;
-  if (isZoomed && districtTrends) {
-    // Draw districts with district-level search trends (green palette)
+  if (useDistrictSearch) {
+    // Draw districts with district-level search trends (teal/mint palette)
     leftPaths = leftGroup.selectAll("path")
       .data(districtsGeoJSON.features)
       .enter().append("path")
@@ -227,7 +256,7 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
       .attr("class", "state")
       .attr("id", f => `synced-state-${f.properties.ST_NM.replace(/\s+/g, '-')}`)
       .style("fill", f => {
-        const val = stateTrends[condition][f.properties.ST_NM];
+        const val = stateTrends[condition] ? stateTrends[condition][f.properties.ST_NM] : undefined;
         return (val !== undefined) ? leftScale(val) : "#1e293b";
       });
   }
@@ -244,25 +273,61 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
       return (distInfo && distInfo[condition] !== undefined) ? rightScale(distInfo[condition]) : "#1e293b";
     });
 
+  // ── State Border Overlay ──────────────────────────────────────
+  if (statesGeoJSON && statesGeoJSON.features) {
+    // Left map (Search Interest / Green) -> Dark Green border (#042f2e)
+    leftGroup.append("g")
+      .attr("class", "state-borders-overlay")
+      .selectAll("path")
+      .data(statesGeoJSON.features)
+      .enter()
+      .append("path")
+      .attr("d", leftPath)
+      .style("fill", "none")
+      .style("stroke", "#042f2e")
+      .style("stroke-width", "1.5px")
+      .style("stroke-linejoin", "round")
+      .style("pointer-events", "none");
+
+    // Right map (Clinical Outcome / Blue) -> Dark Blue border (#0f172a)
+    rightGroup.append("g")
+      .attr("class", "state-borders-overlay")
+      .selectAll("path")
+      .data(statesGeoJSON.features)
+      .enter()
+      .append("path")
+      .attr("d", rightPath)
+      .style("fill", "none")
+      .style("stroke", "#0f172a")
+      .style("stroke-width", "1.5px")
+      .style("stroke-linejoin", "round")
+      .style("pointer-events", "none");
+  }
+
   // ── Synchronized hover ────────────────────────────────────────
-  leftPaths.on("mouseover", function(event, d) {
+  leftPaths.on("mouseover", function (event, d) {
     const isDistrictFeature = d.properties.DISTRICT !== undefined;
-    const searchKey  = isDistrictFeature ? d.properties.DISTRICT : d.properties.ST_NM;
-    const regionName = isDistrictFeature ? d.properties.Dist_name  : d.properties.ST_NM;
-    const stateName  = d.properties.ST_NM;
+    const searchKey = isDistrictFeature ? d.properties.DISTRICT : d.properties.ST_NM;
+    const regionName = isDistrictFeature ? d.properties.Dist_name : d.properties.ST_NM;
+    const stateName = d.properties.ST_NM;
 
     let val;
     if (isDistrictFeature && districtTrends) {
       val = (districtTrends[condition] || {})[searchKey];
     } else {
-      val = stateTrends[condition][searchKey];
+      val = stateTrends[condition] ? stateTrends[condition][searchKey] : undefined;
     }
 
     d3.select(this).style("stroke", "#ffffff").style("stroke-width", isDistrictFeature ? "1.25px" : "1.5px");
 
-    // Cross-highlight: sync districts on right that belong to same state
-    districtPaths.filter(df => df.properties.ST_NM === stateName)
-      .style("stroke", "#ffffff").style("stroke-width", "0.8px");
+    // Cross-highlight: sync matching district or state region on right map
+    if (isDistrictFeature) {
+      districtPaths.filter(df => df.properties.DISTRICT === searchKey)
+        .style("stroke", "#ffffff").style("stroke-width", "1.25px");
+    } else {
+      districtPaths.filter(df => df.properties.ST_NM === stateName)
+        .style("stroke", "#ffffff").style("stroke-width", "0.8px");
+    }
 
     tooltip.style("opacity", 1).html(`
       <div class="tooltip-title">${regionName}</div>
@@ -273,21 +338,29 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
       </div>
     `);
   })
-  .on("mousemove", function(event) {
-    tooltip.style("left", `${event.pageX + 15}px`)
-      .style("top", `${event.pageY - 15}px`);
-  })
-  .on("mouseleave", function(event, d) {
-    const stateName = d.properties.ST_NM;
-    const isDistrictFeature = d.properties.DISTRICT !== undefined;
-    d3.select(this).style("stroke", "var(--bg-color)").style("stroke-width", isDistrictFeature ? "0.25px" : "0.5px");
-    districtPaths.filter(df => df.properties.ST_NM === stateName)
-      .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
-    tooltip.style("opacity", 0);
-  });
+    .on("mousemove", function (event) {
+      tooltip.style("left", `${event.pageX + 15}px`)
+        .style("top", `${event.pageY - 15}px`);
+    })
+    .on("mouseleave", function (event, d) {
+      const isDistrictFeature = d.properties.DISTRICT !== undefined;
+      const searchKey = isDistrictFeature ? d.properties.DISTRICT : d.properties.ST_NM;
+      const stateName = d.properties.ST_NM;
 
-  districtPaths.on("mouseover", function(event, d) {
-    const distId   = d.properties.DISTRICT;
+      d3.select(this).style("stroke", "var(--bg-color)").style("stroke-width", isDistrictFeature ? "0.25px" : "0.5px");
+
+      if (isDistrictFeature) {
+        districtPaths.filter(df => df.properties.DISTRICT === searchKey)
+          .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
+      } else {
+        districtPaths.filter(df => df.properties.ST_NM === stateName)
+          .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
+      }
+      tooltip.style("opacity", 0);
+    });
+
+  districtPaths.on("mouseover", function (event, d) {
+    const distId = d.properties.DISTRICT;
     const stateName = d.properties.ST_NM;
     const distName = d.properties.Dist_name;
     const distInfo = districtHealth.find(dh => dh.id === distId);
@@ -295,8 +368,8 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
 
     d3.select(this).style("stroke", "#ffffff").style("stroke-width", "1.25px");
 
-    // Highlight matching left-map region
-    if (isZoomed) {
+    // Highlight matching left-map region (district if useDistrictSearch, state otherwise)
+    if (useDistrictSearch) {
       leftPaths.filter(lf => lf.properties.DISTRICT === distId)
         .style("stroke", "#ffffff").style("stroke-width", "1.25px");
     } else {
@@ -313,26 +386,41 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
       </div>
     `);
   })
-  .on("mousemove", function(event) {
-    tooltip.style("left", `${event.pageX + 15}px`)
-      .style("top", `${event.pageY - 15}px`);
-  })
-  .on("mouseleave", function(event, d) {
-    const distId    = d.properties.DISTRICT;
-    const stateName = d.properties.ST_NM;
-    d3.select(this).style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
-    if (isZoomed) {
-      leftPaths.filter(lf => lf.properties.DISTRICT === distId)
-        .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
-    } else {
-      leftPaths.filter(lf => lf.properties.ST_NM === stateName)
-        .style("stroke", "var(--bg-color)").style("stroke-width", "0.5px");
-    }
-    tooltip.style("opacity", 0);
-  });
+    .on("mousemove", function (event) {
+      tooltip.style("left", `${event.pageX + 15}px`)
+        .style("top", `${event.pageY - 15}px`);
+    })
+    .on("mouseleave", function (event, d) {
+      const distId = d.properties.DISTRICT;
+      const stateName = d.properties.ST_NM;
+      d3.select(this).style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
+      if (useDistrictSearch) {
+        leftPaths.filter(lf => lf.properties.DISTRICT === distId)
+          .style("stroke", "var(--bg-color)").style("stroke-width", "0.25px");
+      } else {
+        leftPaths.filter(lf => lf.properties.ST_NM === stateName)
+          .style("stroke", "var(--bg-color)").style("stroke-width", "0.5px");
+      }
+      tooltip.style("opacity", 0);
+    });
+
+  // ── Click event for zooming into state ────────────────────────
+  if (onStateClick) {
+    leftPaths.on("click", function(event, d) {
+      if (d && d.properties && d.properties.ST_NM) {
+        onStateClick(d.properties.ST_NM);
+      }
+    });
+
+    districtPaths.on("click", function(event, d) {
+      if (d && d.properties && d.properties.ST_NM) {
+        onStateClick(d.properties.ST_NM);
+      }
+    });
+  }
 
   // ── Legends ───────────────────────────────────────────────────
-  drawLegend(leftPanel,  'search', leftMin, leftMax,  'Search Interest', '');
+  drawLegend(leftPanel, 'search', leftMin, leftMax, 'Search Interest', '');
   drawLegend(rightPanel, 'health', rightMin, rightMax, config.healthLabel, config.unit);
 }
 
