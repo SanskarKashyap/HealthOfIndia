@@ -1,9 +1,9 @@
 // Main Bootstrapping & Coordination Module
-import { loadAllData } from './data-loader.js?v=1.3';
-import { conditionConfig } from './utils.js?v=1.3';
-import { renderSingleMap, renderSyncedMaps } from './maps.js?v=1.3';
-import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=1.3';
-import { initScrollObserver } from './scroll-observer.js?v=1.3';
+import { loadAllData } from './data-loader.js?v=2.7';
+import { conditionConfig } from './utils.js?v=2.7';
+import { renderSingleMap, renderSyncedMaps } from './maps.js?v=2.7';
+import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=2.7';
+import { initScrollObserver, scrollToStep, scrollToTop, toggleAutoScroll, startAutoScroll, stopAutoScroll } from './scroll-observer.js?v=2.7';
 
 // --- Cookie & Local Storage Persistence Helpers ---
 export function setStoredPreference(key, value) {
@@ -51,11 +51,20 @@ let state = {
 // Start application
 window.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Show loading state in vis panel
-    d3.select("#vis-container").html("<div class='loading'>Loading Indian Spatial and Health Databases...</div>");
+    // Show sleek loading state in vis panel
+    d3.select("#vis-container").html(`
+      <div class='loading-box'>
+        <div class='loading-spinner'></div>
+        <div class='loading-text'>Loading Indian Spatial & Health Databases...</div>
+      </div>
+    `);
     
     // Load datasets
     state.data = await loadAllData();
+
+    // Remove loading indicator immediately once data is ready
+    const initialLoader = document.querySelector('.loading-box');
+    if (initialLoader) initialLoader.remove();
     
     // Initialize components
     populateStateSelector();
@@ -65,20 +74,38 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     setupEventHandlers();
     
-    // Init scroll observer to drive scrollytelling
-    // Use a pending-render flag so rapid scrolling never queues multiple D3 redraws.
-    let pendingRender = null;
-    initScrollObserver((stepNum) => {
-      state.currentStep = stepNum;
-      if (pendingRender) cancelAnimationFrame(pendingRender);
-      pendingRender = requestAnimationFrame(() => {
-        pendingRender = null;
-        renderCurrentStep();
-      });
-    });
+    // Init unified scroll observer to drive scrollytelling & progress bar
+    initScrollObserver(
+      // 1. On active step change: switch precomputed layer in 0ms (snap of finger)
+      (stepNum) => {
+        state.currentStep = stepNum;
 
-    // Initial render
-    renderCurrentStep();
+        // Update Floating Step Rail Active Dot
+        document.querySelectorAll('.step-dot').forEach(dot => {
+          dot.classList.toggle('active', parseInt(dot.dataset.step, 10) === stepNum);
+        });
+
+        // Switch pre-rendered visualization layer in 0ms
+        switchVisStep(stepNum);
+      },
+      // 2. On continuous scroll progress (0% to 100%)
+      ({ progress, scrollY }) => {
+        // Update top reading progress bar
+        const progressBar = document.getElementById('reading-progress-bar');
+        if (progressBar) {
+          progressBar.style.width = `${(progress * 100).toFixed(1)}%`;
+        }
+
+        // Show/hide Back-to-Top Button
+        const backToTopBtn = document.getElementById('back-to-top-btn');
+        if (backToTopBtn) {
+          backToTopBtn.classList.toggle('visible', scrollY > 400);
+        }
+      }
+    );
+
+    // Progressive instant hydration: render Step 1 instantly, precompute rest in background
+    invalidateAndRecomputeAllLayers();
     updateNarrativeTexts();
   } catch (err) {
     console.error("Critical error booting application:", err);
@@ -127,7 +154,7 @@ function setupEventHandlers() {
     state.activeCondition = e.target.value;
     setStoredPreference('hoi_condition', state.activeCondition);
     updateNarrativeTexts();
-    renderCurrentStep();
+    invalidateAndRecomputeAllLayers();
   });
 
   // State Filter Dropdown
@@ -135,7 +162,7 @@ function setupEventHandlers() {
     state.activeState = e.target.value;
     setStoredPreference('hoi_state', state.activeState);
     updateNarrativeTexts();
-    renderCurrentStep();
+    invalidateAndRecomputeAllLayers();
   });
 
   // Logo Reset
@@ -150,13 +177,51 @@ function setupEventHandlers() {
     updateNarrativeTexts();
     
     // Smooth scroll back to top hero
-    document.getElementById("hero-section").scrollIntoView({ behavior: 'smooth' });
-    renderCurrentStep();
+    scrollToTop();
+    invalidateAndRecomputeAllLayers();
   });
+
+  // Step Rail Navigation Click Listeners
+  document.querySelectorAll('.step-dot').forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.preventDefault();
+      const stepNum = parseInt(dot.dataset.step, 10);
+      if (!isNaN(stepNum)) {
+        scrollToStep(stepNum);
+      }
+    });
+  });
+
+  // Hero Scroll to Explore Button Click
+  const heroScrollBtn = document.getElementById('hero-scroll-btn');
+  if (heroScrollBtn) {
+    heroScrollBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      scrollToStep(1);
+    });
+  }
+
+  // Back to Top Floating Button Click
+  const backToTopBtn = document.getElementById('back-to-top-btn');
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      scrollToTop();
+    });
+  }
+
+  // Auto Scroll Toggle Floating Button Click (Gentle slow speed: 1.0px/frame)
+  const autoScrollBtn = document.getElementById('auto-scroll-btn');
+  if (autoScrollBtn) {
+    autoScrollBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleAutoScroll(1.0);
+    });
+  }
 
   // Window Resize
   window.addEventListener("resize", debounce(() => {
-    renderCurrentStep();
+    invalidateAndRecomputeAllLayers();
   }, 250));
 }
 
@@ -425,21 +490,34 @@ function renderOutliersTable(outlierData, cond) {
         state.activeState = 'all';
         setStoredPreference('hoi_state', 'all');
         updateNarrativeTexts();
-        renderCurrentStep();
+        invalidateAndRecomputeAllLayers();
       });
     }
   }
 }
 
-// Render active visualization based on current step scroll position
-function renderCurrentStep() {
-  if (!state.data) return;
+// Set of layers already computed and ready in the DOM
+const computedLayers = new Set();
 
-  const vis = d3.select("#vis-container");
+/**
+ * Computes a specific step layer and injects its visualization into the DOM.
+ * @param {number} stepNum
+ */
+export function computeLayer(stepNum) {
+  if (!state.data) return;
   const cond = state.activeCondition;
   const activeSt = state.activeState;
-  const step = state.currentStep;
+  const container = document.getElementById("vis-container");
+  if (!container) return;
 
+  // Ensure layer container exists
+  let layer = document.getElementById(`vis-layer-${stepNum}`);
+  if (!layer) {
+    layer = document.createElement("div");
+    layer.id = `vis-layer-${stepNum}`;
+    layer.className = `vis-step-layer vis-step-layer-${stepNum}`;
+    container.appendChild(layer);
+  }
 
   const handleStateClick = (selectedState) => {
     if (!selectedState) return;
@@ -447,13 +525,11 @@ function renderCurrentStep() {
     state.activeState = selectedState;
     setStoredPreference('hoi_state', selectedState);
     updateNarrativeTexts();
-    renderCurrentStep();
+    invalidateAndRecomputeAllLayers();
   };
 
-  // Render correct panel based on step index
-  switch(step) {
+  switch (stepNum) {
     case 1:
-      // Step 1: Search Map (District level across all of India)
       if (activeSt === 'all') {
         const trendsMap = new Map();
         const distTrends = state.data.districtTrends[cond] || {};
@@ -461,9 +537,8 @@ function renderCurrentStep() {
           const key = f.properties.DISTRICT;
           trendsMap.set(key, distTrends[key] !== undefined ? distTrends[key] : 0);
         });
-        renderSingleMap("vis-container", state.data.districtsGeoJSON, trendsMap, 'district', cond, `Google Trends: District Search Interest for "${conditionConfig[cond].title}"`, handleStateClick, 'search', state.data.statesGeoJSON);
+        renderSingleMap("vis-layer-1", state.data.districtsGeoJSON, trendsMap, 'district', cond, `Google Trends: District Search Interest for "${conditionConfig[cond].title}"`, handleStateClick, 'search', state.data.statesGeoJSON);
       } else {
-        // Zoom in to show district-level search trends in the selected state
         const stateDistGeo = {
           type: 'FeatureCollection',
           features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
@@ -474,21 +549,16 @@ function renderCurrentStep() {
           const key = f.properties.DISTRICT;
           trendsMap.set(key, distTrends[key] !== undefined ? distTrends[key] : 0);
         });
-
-        renderSingleMap("vis-container", stateDistGeo, trendsMap, 'district', cond, `District Search Volume: ${activeSt}`, handleStateClick, 'search');
+        renderSingleMap("vis-layer-1", stateDistGeo, trendsMap, 'district', cond, `District Search Volume: ${activeSt}`, handleStateClick, 'search');
       }
       break;
-      
+
     case 2:
-      // Step 2: Clinical Outcomes (District level)
       if (activeSt === 'all') {
-        const healthMap = state.data.districtHealthMap;
         const mappedHealth = new Map();
         state.data.districtHealth.forEach(d => mappedHealth.set(d.id, d[cond]));
-        
-        renderSingleMap("vis-container", state.data.districtsGeoJSON, mappedHealth, 'district', cond, `NFHS-5 Outcomes: "${conditionConfig[cond].title}"`, handleStateClick, 'health', state.data.statesGeoJSON);
+        renderSingleMap("vis-layer-2", state.data.districtsGeoJSON, mappedHealth, 'district', cond, `NFHS-5 Outcomes: "${conditionConfig[cond].title}"`, handleStateClick, 'health', state.data.statesGeoJSON);
       } else {
-        // Zoom in to districts of selected state
         const filteredDistGeo = {
           type: 'FeatureCollection',
           features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
@@ -497,17 +567,14 @@ function renderCurrentStep() {
         state.data.districtHealth
           .filter(d => d.state === activeSt)
           .forEach(d => mappedHealth.set(d.id, d[cond]));
-
-        renderSingleMap("vis-container", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, handleStateClick, 'health');
+        renderSingleMap("vis-layer-2", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, handleStateClick, 'health');
       }
       break;
-      
+
     case 3:
-      // Step 3: Side-by-Side synced maps (always district level on both sides)
       if (activeSt === 'all') {
-        renderSyncedMaps("vis-container", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond, state.data.districtTrends, handleStateClick);
+        renderSyncedMaps("vis-layer-3", state.data.statesGeoJSON, state.data.districtsGeoJSON, state.data.stateTrends, state.data.districtHealth, cond, state.data.districtTrends, handleStateClick);
       } else {
-        // Filter side-by-side to selected state; pass districtTrends so left map shows district search data
         const filteredStateGeo = {
           type: 'FeatureCollection',
           features: state.data.statesGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
@@ -516,24 +583,81 @@ function renderCurrentStep() {
           type: 'FeatureCollection',
           features: state.data.districtsGeoJSON.features.filter(f => f.properties.ST_NM === activeSt)
         };
-        renderSyncedMaps("vis-container", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond, state.data.districtTrends, handleStateClick);
+        renderSyncedMaps("vis-layer-3", filteredStateGeo, filteredDistGeo, state.data.stateTrends, state.data.districtHealth.filter(d => d.state === activeSt), cond, state.data.districtTrends, handleStateClick);
       }
       break;
-      
+
     case 4:
-      // Step 4: Outliers — horizontal bar chart sorted ascending by SEARCH INTEREST
       if (activeSt === 'all') {
-        renderHorizontalBarChart("vis-container", state.data.stateHealth, state.data.stateTrends, cond, 'search', handleStateClick, 'all');
+        renderHorizontalBarChart("vis-layer-4", state.data.stateHealth, state.data.stateTrends, cond, 'search', handleStateClick, 'all');
       } else {
         const filteredDistricts = state.data.districtHealth.filter(d => d.state === activeSt);
-        renderHorizontalBarChart("vis-container", filteredDistricts, state.data.districtTrends, cond, 'search', null, activeSt);
+        renderHorizontalBarChart("vis-layer-4", filteredDistricts, state.data.districtTrends, cond, 'search', null, activeSt);
       }
       break;
 
     case 5:
-      // Step 5: National Line Chart (Time Trends)
-      renderLineChart("vis-container", state.data.nationalTimeTrends[cond], cond);
+      renderLineChart("vis-layer-5", state.data.nationalTimeTrends[cond], cond);
       break;
+  }
+
+  computedLayers.add(stepNum);
+}
+
+/**
+ * Instantly renders Step 1 on startup/filter change, and pre-renders remaining steps in background idle cycles.
+ */
+export function invalidateAndRecomputeAllLayers() {
+  computedLayers.clear();
+  const container = document.getElementById("vis-container");
+  if (container) {
+    // Remove any remaining loading spinners/boxes
+    container.querySelectorAll('.loading-box, .loading').forEach(el => el.remove());
+
+    // Ensure all 5 container divs exist
+    for (let i = 1; i <= 5; i++) {
+      let layer = document.getElementById(`vis-layer-${i}`);
+      if (!layer) {
+        layer = document.createElement("div");
+        layer.id = `vis-layer-${i}`;
+        layer.className = `vis-step-layer vis-step-layer-${i}`;
+        container.appendChild(layer);
+      }
+    }
+  }
+
+  // 1. Instantly compute current step (e.g. Step 1)
+  const current = state.currentStep || 1;
+  computeLayer(current);
+  switchVisStep(current);
+
+  // 2. Pre-compute remaining steps in background idle cycles (staggered ~25ms apart)
+  [1, 2, 3, 4, 5].forEach((s) => {
+    if (s !== current && !computedLayers.has(s)) {
+      setTimeout(() => {
+        if (!computedLayers.has(s)) {
+          computeLayer(s);
+        }
+      }, 25 * s);
+    }
+  });
+}
+
+/**
+ * Instant 0ms Layer Switcher (Snap of a Finger)
+ * @param {number} stepNum
+ */
+export function switchVisStep(stepNum) {
+  // Ensure the target layer is computed if user scrolled before background pre-compute finished
+  if (!computedLayers.has(stepNum)) {
+    computeLayer(stepNum);
+  }
+
+  for (let i = 1; i <= 5; i++) {
+    const layer = document.getElementById(`vis-layer-${i}`);
+    if (layer) {
+      layer.classList.toggle('vis-layer-active', i === stepNum);
+    }
   }
 }
 
@@ -549,3 +673,6 @@ function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+
+// Backward-compatibility alias
+export const precomputeAllVisLayers = invalidateAndRecomputeAllLayers;

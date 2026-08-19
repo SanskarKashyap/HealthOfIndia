@@ -8,10 +8,11 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
-  // Set up dimensions
-  const rect = container.node().getBoundingClientRect();
-  const width = rect.width;
-  const height = rect.height;
+  // Set up dimensions using parent vis-container for reliable sizing even when layer is precomputed in background
+  const visParent = document.getElementById("vis-container");
+  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
+  const width = parentRect.width || 800;
+  const height = parentRect.height || 600;
 
   // Create SVG
   const svg = container.append("svg")
@@ -165,9 +166,12 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const leftPanel = wrapper.append("div").attr("class", "synced-map-panel").attr("id", "synced-left");
   const rightPanel = wrapper.append("div").attr("class", "synced-map-panel").attr("id", "synced-right");
 
-  const leftRect = leftPanel.node().getBoundingClientRect();
-  const w = leftRect.width;
-  const h = leftRect.height;
+  const visParent = document.getElementById("vis-container");
+  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
+  const containerW = parentRect.width || 800;
+  const containerH = parentRect.height || 600;
+  const w = Math.max(300, (containerW / 2) - 8);
+  const h = containerH;
 
   const stateNameHeader = isZoomed && districtsGeoJSON.features.length > 0 ? districtsGeoJSON.features[0].properties.ST_NM : null;
   const leftTitle = isZoomed

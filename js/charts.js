@@ -7,10 +7,11 @@ export function renderLineChart(containerId, timeData, condition) {
 
   const config = conditionConfig[condition];
   
-  // Set up dimensions
-  const rect = container.node().getBoundingClientRect();
-  const width = rect.width;
-  const height = rect.height;
+  // Set up dimensions using parent vis-container for reliable sizing
+  const visParent = document.getElementById("vis-container");
+  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
+  const width = parentRect.width || 800;
+  const height = parentRect.height || 600;
   
   const margin = { top: 40, right: 30, bottom: 50, left: 60 };
   const chartWidth = width - margin.left - margin.right;
@@ -427,11 +428,10 @@ export function renderHorizontalBarChart(containerId, items, trendsData, conditi
   container.html('');
 
   const config = conditionConfig[condition];
-  const isDistrictLevel = Boolean(stateName && stateName !== 'all');
-
-  const rect = container.node().getBoundingClientRect();
-  const totalWidth  = rect.width || 600;
-  const totalHeight = rect.height || 600;
+  const visParent = document.getElementById("vis-container");
+  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
+  const totalWidth  = parentRect.width || 800;
+  const totalHeight = parentRect.height || 600;
 
   // Prepare & sort data
   const raw = items.map(d => {
