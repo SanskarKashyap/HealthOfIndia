@@ -1,0 +1,586 @@
+{
+  "Mumbai": {
+    "district_id": "Mumbai Suburban_23",
+    "state": "Maharashtra"
+  },
+  "Pune": {
+    "district_id": "Pune_25",
+    "state": "Maharashtra"
+  },
+  "Nagpur": {
+    "district_id": "Nagpur_9",
+    "state": "Maharashtra"
+  },
+  "Nashik": {
+    "district_id": "Nashik_20",
+    "state": "Maharashtra"
+  },
+  "Aurangabad": {
+    "district_id": "Aurangabad_19",
+    "state": "Maharashtra"
+  },
+  "Thane": {
+    "district_id": "Thane_21",
+    "state": "Maharashtra"
+  },
+  "Kolhapur": {
+    "district_id": "Kolhapur_30",
+    "state": "Maharashtra"
+  },
+  "Solapur": {
+    "district_id": "Solapur_27",
+    "state": "Maharashtra"
+  },
+  "Amravati": {
+    "district_id": "Amravati_7",
+    "state": "Maharashtra"
+  },
+  "Navi Mumbai": {
+    "district_id": "Thane_21",
+    "state": "Maharashtra"
+  },
+  "Nanded": {
+    "district_id": "Nanded_15",
+    "state": "Maharashtra"
+  },
+  "Sangli": {
+    "district_id": "Sangli_29",
+    "state": "Maharashtra"
+  },
+  "Akola": {
+    "district_id": "Akola_5",
+    "state": "Maharashtra"
+  },
+  "Bengaluru": {
+    "district_id": "Bengaluru Urban_18",
+    "state": "Karnataka"
+  },
+  "Bangalore": {
+    "district_id": "Bengaluru Urban_18",
+    "state": "Karnataka"
+  },
+  "Mysuru": {
+    "district_id": "Mysuru_22",
+    "state": "Karnataka"
+  },
+  "Mysore": {
+    "district_id": "Mysuru_22",
+    "state": "Karnataka"
+  },
+  "Hubli": {
+    "district_id": "Dharwad_7",
+    "state": "Karnataka"
+  },
+  "Mangalore": {
+    "district_id": "Dakshina Kannada_2",
+    "state": "Karnataka"
+  },
+  "Mangaluru": {
+    "district_id": "Dakshina Kannada_2",
+    "state": "Karnataka"
+  },
+  "Belgaum": {
+    "district_id": "Belgaum_3",
+    "state": "Karnataka"
+  },
+  "Belagavi": {
+    "district_id": "Belgaum_3",
+    "state": "Karnataka"
+  },
+  "Gulbarga": {
+    "district_id": "Gulbarga_4",
+    "state": "Karnataka"
+  },
+  "Kalaburagi": {
+    "district_id": "Gulbarga_4",
+    "state": "Karnataka"
+  },
+  "Davanagere": {
+    "district_id": "Davangere_8",
+    "state": "Karnataka"
+  },
+  "Bellary": {
+    "district_id": "Bellary_5",
+    "state": "Karnataka"
+  },
+  "Shimoga": {
+    "district_id": "Shimoga_14",
+    "state": "Karnataka"
+  },
+  "Chennai": {
+    "district_id": "Chennai_3",
+    "state": "Tamil Nadu"
+  },
+  "Coimbatore": {
+    "district_id": "Coimbatore_19",
+    "state": "Tamil Nadu"
+  },
+  "Madurai": {
+    "district_id": "Madurai_25",
+    "state": "Tamil Nadu"
+  },
+  "Tiruchirappalli": {
+    "district_id": "Tiruchirappalli_16",
+    "state": "Tamil Nadu"
+  },
+  "Trichy": {
+    "district_id": "Tiruchirappalli_16",
+    "state": "Tamil Nadu"
+  },
+  "Salem": {
+    "district_id": "Salem_12",
+    "state": "Tamil Nadu"
+  },
+  "Tirunelveli": {
+    "district_id": "Tirunelveli_29",
+    "state": "Tamil Nadu"
+  },
+  "Erode": {
+    "district_id": "Erode_18",
+    "state": "Tamil Nadu"
+  },
+  "Vellore": {
+    "district_id": "Vellore_8",
+    "state": "Tamil Nadu"
+  },
+  "Thanjavur": {
+    "district_id": "Thanjavur_14",
+    "state": "Tamil Nadu"
+  },
+  "Tiruppur": {
+    "district_id": "Tiruppur_20",
+    "state": "Tamil Nadu"
+  },
+  "Dindigul": {
+    "district_id": "Dindigul_22",
+    "state": "Tamil Nadu"
+  },
+  "Tuticorin": {
+    "district_id": "Thoothukkudi_30",
+    "state": "Tamil Nadu"
+  },
+  "Thoothukudi": {
+    "district_id": "Thoothukkudi_30",
+    "state": "Tamil Nadu"
+  },
+  "Nagercoil": {
+    "district_id": "Kanniyakumari_31",
+    "state": "Tamil Nadu"
+  },
+  "Kochi": {
+    "district_id": "Ernakulam_8",
+    "state": "Kerala"
+  },
+  "Cochin": {
+    "district_id": "Ernakulam_8",
+    "state": "Kerala"
+  },
+  "Thiruvananthapuram": {
+    "district_id": "Thiruvananthapuram_14",
+    "state": "Kerala"
+  },
+  "Trivandrum": {
+    "district_id": "Thiruvananthapuram_14",
+    "state": "Kerala"
+  },
+  "Kozhikode": {
+    "district_id": "Kozhikode_3",
+    "state": "Kerala"
+  },
+  "Calicut": {
+    "district_id": "Kozhikode_3",
+    "state": "Kerala"
+  },
+  "Thrissur": {
+    "district_id": "Thrissur_6",
+    "state": "Kerala"
+  },
+  "Kollam": {
+    "district_id": "Kollam_13",
+    "state": "Kerala"
+  },
+  "Kannur": {
+    "district_id": "Kannur_2",
+    "state": "Kerala"
+  },
+  "Palakkad": {
+    "district_id": "Palakkad_5",
+    "state": "Kerala"
+  },
+  "Malappuram": {
+    "district_id": "Malappuram_4",
+    "state": "Kerala"
+  },
+  "Kottayam": {
+    "district_id": "Kottayam_10",
+    "state": "Kerala"
+  },
+  "Lucknow": {
+    "district_id": "Lucknow_25",
+    "state": "Uttar Pradesh"
+  },
+  "Kanpur": {
+    "district_id": "Kanpur Nagar_23",
+    "state": "Uttar Pradesh"
+  },
+  "Agra": {
+    "district_id": "Agra_15",
+    "state": "Uttar Pradesh"
+  },
+  "Varanasi": {
+    "district_id": "Varanasi_57",
+    "state": "Uttar Pradesh"
+  },
+  "Allahabad": {
+    "district_id": "Allahabad_44",
+    "state": "Uttar Pradesh"
+  },
+  "Prayagraj": {
+    "district_id": "Allahabad_44",
+    "state": "Uttar Pradesh"
+  },
+  "Meerut": {
+    "district_id": "Meerut_6",
+    "state": "Uttar Pradesh"
+  },
+  "Bareilly": {
+    "district_id": "Bareilly_33",
+    "state": "Uttar Pradesh"
+  },
+  "Aligarh": {
+    "district_id": "Aligarh_12",
+    "state": "Uttar Pradesh"
+  },
+  "Moradabad": {
+    "district_id": "Moradabad_10",
+    "state": "Uttar Pradesh"
+  },
+  "Gorakhpur": {
+    "district_id": "Gorakhpur_52",
+    "state": "Uttar Pradesh"
+  },
+  "Noida": {
+    "district_id": "Gautam Buddha Nagar_9",
+    "state": "Uttar Pradesh"
+  },
+  "Ghaziabad": {
+    "district_id": "Ghaziabad_7",
+    "state": "Uttar Pradesh"
+  },
+  "Jhansi": {
+    "district_id": "Jhansi_26",
+    "state": "Uttar Pradesh"
+  },
+  "Mathura": {
+    "district_id": "Mathura_14",
+    "state": "Uttar Pradesh"
+  },
+  "Jaipur": {
+    "district_id": "Jaipur_12",
+    "state": "Rajasthan"
+  },
+  "Jodhpur": {
+    "district_id": "Jodhpur_25",
+    "state": "Rajasthan"
+  },
+  "Udaipur": {
+    "district_id": "Udaipur_29",
+    "state": "Rajasthan"
+  },
+  "Kota": {
+    "district_id": "Kota_18",
+    "state": "Rajasthan"
+  },
+  "Ajmer": {
+    "district_id": "Ajmer_21",
+    "state": "Rajasthan"
+  },
+  "Bikaner": {
+    "district_id": "Bikaner_4",
+    "state": "Rajasthan"
+  },
+  "Ahmedabad": {
+    "district_id": "Ahmadabad_7",
+    "state": "Gujarat"
+  },
+  "Surat": {
+    "district_id": "Surat_20",
+    "state": "Gujarat"
+  },
+  "Vadodara": {
+    "district_id": "Vadodara_18",
+    "state": "Gujarat"
+  },
+  "Baroda": {
+    "district_id": "Vadodara_18",
+    "state": "Gujarat"
+  },
+  "Rajkot": {
+    "district_id": "Rajkot_10",
+    "state": "Gujarat"
+  },
+  "Bhavnagar": {
+    "district_id": "Bhavnagar_14",
+    "state": "Gujarat"
+  },
+  "Jamnagar": {
+    "district_id": "Jamnagar_9",
+    "state": "Gujarat"
+  },
+  "Gandhinagar": {
+    "district_id": "Gandhinagar_16",
+    "state": "Gujarat"
+  },
+  "Junagadh": {
+    "district_id": "Junagadh_12",
+    "state": "Gujarat"
+  },
+  "New Delhi": {
+    "district_id": "New Delhi_9",
+    "state": "NCT of Delhi"
+  },
+  "Delhi": {
+    "district_id": "New Delhi_9",
+    "state": "NCT of Delhi"
+  },
+  "Kolkata": {
+    "district_id": "Kolkata_16",
+    "state": "West Bengal"
+  },
+  "Howrah": {
+    "district_id": "Howrah_15",
+    "state": "West Bengal"
+  },
+  "Durgapur": {
+    "district_id": "Barddhaman_14",
+    "state": "West Bengal"
+  },
+  "Siliguri": {
+    "district_id": "Darjiling_1",
+    "state": "West Bengal"
+  },
+  "Asansol": {
+    "district_id": "Barddhaman_14",
+    "state": "West Bengal"
+  },
+  "Bhopal": {
+    "district_id": "Bhopal_28",
+    "state": "Madhya Pradesh"
+  },
+  "Indore": {
+    "district_id": "Indore_31",
+    "state": "Madhya Pradesh"
+  },
+  "Jabalpur": {
+    "district_id": "Jabalpur_36",
+    "state": "Madhya Pradesh"
+  },
+  "Gwalior": {
+    "district_id": "Gwalior_24",
+    "state": "Madhya Pradesh"
+  },
+  "Patna": {
+    "district_id": "Patna_28",
+    "state": "Bihar"
+  },
+  "Gaya": {
+    "district_id": "Gaya_31",
+    "state": "Bihar"
+  },
+  "Muzaffarpur": {
+    "district_id": "Muzaffarpur_12",
+    "state": "Bihar"
+  },
+  "Bhagalpur": {
+    "district_id": "Bhagalpur_9",
+    "state": "Bihar"
+  },
+  "Hyderabad": {
+    "district_id": "Hyderabad_7",
+    "state": "Telangana"
+  },
+  "Warangal": {
+    "district_id": "Warangal_3",
+    "state": "Telangana"
+  },
+  "Nizamabad": {
+    "district_id": "Nizamabad_2",
+    "state": "Telangana"
+  },
+  "Karimnagar": {
+    "district_id": "Karimnagar_4",
+    "state": "Telangana"
+  },
+  "Visakhapatnam": {
+    "district_id": "Visakhapatnam_3",
+    "state": "Andhra Pradesh"
+  },
+  "Vizag": {
+    "district_id": "Visakhapatnam_3",
+    "state": "Andhra Pradesh"
+  },
+  "Vijayawada": {
+    "district_id": "Krishna_6",
+    "state": "Andhra Pradesh"
+  },
+  "Tirupati": {
+    "district_id": "Chittoor_13",
+    "state": "Andhra Pradesh"
+  },
+  "Guntur": {
+    "district_id": "Guntur_7",
+    "state": "Andhra Pradesh"
+  },
+  "Nellore": {
+    "district_id": "Nellore_9",
+    "state": "Andhra Pradesh"
+  },
+  "Kurnool": {
+    "district_id": "Kurnool_11",
+    "state": "Andhra Pradesh"
+  },
+  "Ludhiana": {
+    "district_id": "Ludhiana_11",
+    "state": "Punjab"
+  },
+  "Amritsar": {
+    "district_id": "Amritsar_15",
+    "state": "Punjab"
+  },
+  "Jalandhar": {
+    "district_id": "Jalandhar_9",
+    "state": "Punjab"
+  },
+  "Patiala": {
+    "district_id": "Patiala_7",
+    "state": "Punjab"
+  },
+  "Bathinda": {
+    "district_id": "Bathinda_4",
+    "state": "Punjab"
+  },
+  "Gurugram": {
+    "district_id": "Gurgaon_6",
+    "state": "Haryana"
+  },
+  "Gurgaon": {
+    "district_id": "Gurgaon_6",
+    "state": "Haryana"
+  },
+  "Faridabad": {
+    "district_id": "Faridabad_7",
+    "state": "Haryana"
+  },
+  "Panipat": {
+    "district_id": "Panipat_10",
+    "state": "Haryana"
+  },
+  "Ambala": {
+    "district_id": "Ambala_2",
+    "state": "Haryana"
+  },
+  "Karnal": {
+    "district_id": "Karnal_9",
+    "state": "Haryana"
+  },
+  "Hisar": {
+    "district_id": "Hisar_16",
+    "state": "Haryana"
+  },
+  "Rohtak": {
+    "district_id": "Rohtak_13",
+    "state": "Haryana"
+  },
+  "Bhubaneswar": {
+    "district_id": "Khordha_19",
+    "state": "Odisha"
+  },
+  "Cuttack": {
+    "district_id": "Cuttack_17",
+    "state": "Odisha"
+  },
+  "Rourkela": {
+    "district_id": "Sundargarh_2",
+    "state": "Odisha"
+  },
+  "Ranchi": {
+    "district_id": "Ranchi_17",
+    "state": "Jharkhand"
+  },
+  "Jamshedpur": {
+    "district_id": "East Singhbhum_19",
+    "state": "Jharkhand"
+  },
+  "Dhanbad": {
+    "district_id": "Dhanbad_21",
+    "state": "Jharkhand"
+  },
+  "Bokaro": {
+    "district_id": "Bokaro_22",
+    "state": "Jharkhand"
+  },
+  "Raipur": {
+    "district_id": "Raipur_14",
+    "state": "Chhattisgarh"
+  },
+  "Bhilai": {
+    "district_id": "Durg_11",
+    "state": "Chhattisgarh"
+  },
+  "Bilaspur": {
+    "district_id": "Bilaspur_8",
+    "state": "Chhattisgarh"
+  },
+  "Guwahati": {
+    "district_id": "Kamrup Metropolitan_23",
+    "state": "Assam"
+  },
+  "Silchar": {
+    "district_id": "Cachar_1",
+    "state": "Assam"
+  },
+  "Dehradun": {
+    "district_id": "Dehradun_1",
+    "state": "Uttarakhand"
+  },
+  "Haridwar": {
+    "district_id": "Haridwar_2",
+    "state": "Uttarakhand"
+  },
+  "Shimla": {
+    "district_id": "Shimla_7",
+    "state": "Himachal Pradesh"
+  },
+  "Chandigarh": {
+    "district_id": "Chandigarh_1",
+    "state": "Chandigarh"
+  },
+  "Panaji": {
+    "district_id": "North Goa_1",
+    "state": "Goa"
+  },
+  "Margao": {
+    "district_id": "South Goa_2",
+    "state": "Goa"
+  },
+  "Vasco da Gama": {
+    "district_id": "South Goa_2",
+    "state": "Goa"
+  },
+  "Pondicherry": {
+    "district_id": "Pondicherry_1",
+    "state": "Puducherry"
+  },
+  "Puducherry": {
+    "district_id": "Pondicherry_1",
+    "state": "Puducherry"
+  },
+  "Srinagar": {
+    "district_id": "Srinagar_1",
+    "state": "Jammu & Kashmir"
+  },
+  "Jammu": {
+    "district_id": "Jammu_6",
+    "state": "Jammu & Kashmir"
+  }
+}

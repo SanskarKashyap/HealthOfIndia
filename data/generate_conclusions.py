@@ -137,7 +137,7 @@ def analyze_time_trends(trend_data, cond, meta):
                 seasonal_note = f"Summer spike pattern: Jul–Sep average ({summer_avg:.0f}) is {((summer_avg/rest_avg)-1)*100:.0f}% higher than other months ({rest_avg:.0f})."
 
     conclusion = (
-        f"Over the 24-month period (Jan 2024–Dec 2025), national search interest for \"{meta['title']}\" "
+        f"Over the {len(dates)}-month period ({dates[0]}–{dates[-1]}), national search interest for \"{meta['title']}\" "
         f"averaged {avg_interest:.0f}/100. "
         f"Peak interest hit {max_interest} in {max_date}, while the lowest was {min_interest} in {min_date}. "
         f"The overall trend is {trend_direction} "

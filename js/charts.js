@@ -2,11 +2,12 @@
 import { conditionConfig } from './utils.js';
 import { getContainerDimensions } from './maps.js';
 
-export function renderLineChart(containerId, timeData, condition) {
+export function renderLineChart(containerId, timeData, condition, stateName = null, nationalBenchmarkData = null, onResetState = null) {
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
   const config = conditionConfig[condition];
+  const isStateLevel = Boolean(stateName && stateName !== 'all');
   
   // Set up dimensions using responsive helper
   const { width: totalW, height: totalH, isMobile } = getContainerDimensions(containerId);
@@ -14,7 +15,7 @@ export function renderLineChart(containerId, timeData, condition) {
   const height = isMobile ? Math.min(Math.round(width * 0.75), 320) : totalH;
   
   const margin = { 
-    top: isMobile ? 32 : 40, 
+    top: isMobile ? (isStateLevel ? 44 : 36) : 52, 
     right: isMobile ? 16 : 30, 
     bottom: isMobile ? 36 : 50, 
     left: isMobile ? 40 : 60 
@@ -41,7 +42,7 @@ export function renderLineChart(containerId, timeData, condition) {
   areaGradient.append("stop")
     .attr("offset", "0%")
     .attr("stop-color", "var(--search-primary)")
-    .attr("stop-opacity", 0.4);
+    .attr("stop-opacity", 0.35);
     
   areaGradient.append("stop")
     .attr("offset", "100%")
@@ -53,10 +54,15 @@ export function renderLineChart(containerId, timeData, condition) {
 
   // Scales
   const parseDate = d3.timeParse("%b %Y");
-  const data = timeData.map(d => ({
+  const data = (timeData || []).map(d => ({
     date: parseDate(d.date),
     interest: d.interest
   }));
+
+  const benchmarkData = (isStateLevel && nationalBenchmarkData) ? nationalBenchmarkData.map(d => ({
+    date: parseDate(d.date),
+    interest: d.interest
+  })) : null;
 
   const xScale = d3.scaleTime()
     .domain(d3.extent(data, d => d.date))
@@ -88,6 +94,24 @@ export function renderLineChart(containerId, timeData, condition) {
   chartGroup.append("g")
     .attr("class", "chart-axis")
     .call(yAxis);
+
+  // Benchmark line (National baseline) if in state-level view
+  if (benchmarkData && benchmarkData.length > 0) {
+    const benchmarkLineGen = d3.line()
+      .x(d => xScale(d.date))
+      .y(d => yScale(d.interest))
+      .curve(d3.curveMonotoneX);
+
+    chartGroup.append("path")
+      .datum(benchmarkData)
+      .attr("class", "chart-line-benchmark")
+      .attr("d", benchmarkLineGen)
+      .style("fill", "none")
+      .style("stroke", "#64748b")
+      .style("stroke-width", "2px")
+      .style("stroke-dasharray", "4 4")
+      .style("opacity", "0.75");
+  }
 
   // Area generator
   const areaGen = d3.area()
@@ -150,15 +174,33 @@ export function renderLineChart(containerId, timeData, condition) {
       .style("fill", "#ffffff");
       
     const dateStr = d3.timeFormat("%B %Y")(d.date);
-    tooltip
-      .style("opacity", 1)
-      .html(`
-        <div class="tooltip-title">${dateStr}</div>
+    const natPoint = benchmarkData ? benchmarkData.find(b => +b.date === +d.date) : null;
+    
+    let tooltipHtml = `<div class="tooltip-title">${dateStr}</div>`;
+    if (isStateLevel) {
+      tooltipHtml += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">${stateName}:</span>
+          <span class="tooltip-value" style="color:var(--search-primary)">${d.interest}/100</span>
+        </div>
+        ${natPoint ? `
+        <div class="tooltip-row">
+          <span class="tooltip-label">National Avg:</span>
+          <span class="tooltip-value" style="color:#94a3b8">${natPoint.interest}/100</span>
+        </div>` : ''}
+      `;
+    } else {
+      tooltipHtml += `
         <div class="tooltip-row">
           <span class="tooltip-label">Search Interest:</span>
-          <span class="tooltip-value" style="color:var(--search-primary)">${d.interest}</span>
+          <span class="tooltip-value" style="color:var(--search-primary)">${d.interest}/100</span>
         </div>
-      `);
+      `;
+    }
+
+    tooltip
+      .style("opacity", 1)
+      .html(tooltipHtml);
   })
   .on("mousemove", function(event) {
     tooltip
@@ -176,14 +218,85 @@ export function renderLineChart(containerId, timeData, condition) {
   });
 
   // Chart Title / Info Overlay
+  const titleText = isStateLevel
+    ? (isMobile ? `${stateName}: "${config.title}"` : `Search Interest in ${stateName}: "${config.title}"`)
+    : `National Search Interest: "${config.title}"`;
+
   svg.append("text")
     .attr("x", margin.left)
-    .attr("y", 24)
+    .attr("y", isMobile ? 22 : 26)
     .attr("fill", "var(--text-primary)")
     .attr("font-family", "var(--font-header)")
-    .attr("font-size", "1.1rem")
+    .attr("font-size", isMobile ? "0.95rem" : "1.1rem")
     .attr("font-weight", 700)
-    .text(`National Search Interest: "${config.title}"`);
+    .text(titleText);
+
+  // Subtitle / Legend indicators
+  if (isStateLevel) {
+    const legendGroup = svg.append("g")
+      .attr("transform", `translate(${margin.left}, ${isMobile ? 36 : 42})`);
+
+    // State series indicator (solid dot)
+    legendGroup.append("circle")
+      .attr("cx", 4)
+      .attr("cy", 0)
+      .attr("r", 4)
+      .attr("fill", "var(--search-primary)");
+
+    legendGroup.append("text")
+      .attr("x", 12)
+      .attr("y", 3.5)
+      .attr("fill", "var(--text-secondary)")
+      .attr("font-family", "var(--font-body)")
+      .attr("font-size", "0.72rem")
+      .text(stateName);
+
+    // National benchmark indicator (dashed line)
+    if (benchmarkData) {
+      const stateTextWidth = stateName.length * 7 + 24;
+      legendGroup.append("line")
+        .attr("x1", stateTextWidth)
+        .attr("y1", 0)
+        .attr("x2", stateTextWidth + 16)
+        .attr("y2", 0)
+        .attr("stroke", "#64748b")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "3 3");
+
+      legendGroup.append("text")
+        .attr("x", stateTextWidth + 22)
+        .attr("y", 3.5)
+        .attr("fill", "var(--text-muted)")
+        .attr("font-family", "var(--font-body)")
+        .attr("font-size", "0.72rem")
+        .text("National Baseline");
+    }
+
+    // Reset button in chart top-right on desktop
+    if (onResetState && !isMobile && width > 480) {
+      const resetBtnGroup = svg.append("g")
+        .attr("class", "chart-reset-btn")
+        .attr("transform", `translate(${width - margin.right - 105}, 14)`)
+        .style("cursor", "pointer")
+        .on("click", onResetState);
+
+      resetBtnGroup.append("rect")
+        .attr("width", 105)
+        .attr("height", 24)
+        .attr("rx", 6)
+        .attr("fill", "rgba(59, 130, 246, 0.15)")
+        .attr("stroke", "rgba(59, 130, 246, 0.35)");
+
+      resetBtnGroup.append("text")
+        .attr("x", 52)
+        .attr("y", 16)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#93c5fd")
+        .attr("font-family", "var(--font-body)")
+        .attr("font-size", "0.72rem")
+        .text("← All States");
+    }
+  }
 }
 
 export function renderScatterPlot(containerId, stateHealth, stateTrends, condition, onHoverState, onLeaveState) {

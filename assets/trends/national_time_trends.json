@@ -1,228 +1,496 @@
 {
   "cancer": [
     {
-      "date": "Jan 2024",
-      "interest": 38
+      "date": "Aug 2022",
+      "interest": 49
     },
     {
-      "date": "Feb 2024",
-      "interest": 41
+      "date": "Sep 2022",
+      "interest": 54
     },
     {
-      "date": "Mar 2024",
-      "interest": 37
-    },
-    {
-      "date": "Apr 2024",
-      "interest": 39
-    },
-    {
-      "date": "May 2024",
-      "interest": 35
-    },
-    {
-      "date": "Jun 2024",
-      "interest": 31
-    },
-    {
-      "date": "Jul 2024",
-      "interest": 32
-    },
-    {
-      "date": "Aug 2024",
-      "interest": 32
-    },
-    {
-      "date": "Sep 2024",
-      "interest": 28
-    },
-    {
-      "date": "Oct 2024",
-      "interest": 31
-    },
-    {
-      "date": "Nov 2024",
-      "interest": 31
-    },
-    {
-      "date": "Dec 2024",
-      "interest": 28
-    },
-    {
-      "date": "Jan 2025",
-      "interest": 32
-    },
-    {
-      "date": "Feb 2025",
-      "interest": 34
-    },
-    {
-      "date": "Mar 2025",
-      "interest": 37
-    },
-    {
-      "date": "Apr 2025",
-      "interest": 37
-    },
-    {
-      "date": "May 2025",
-      "interest": 44
-    },
-    {
-      "date": "Jun 2025",
-      "interest": 42
-    },
-    {
-      "date": "Jul 2025",
+      "date": "Oct 2022",
       "interest": 46
     },
     {
+      "date": "Nov 2022",
+      "interest": 46
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 42
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 44
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 45
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 46
+    },
+    {
+      "date": "Apr 2023",
+      "interest": 38
+    },
+    {
+      "date": "May 2023",
+      "interest": 69
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 37
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 35
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 32
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 35
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 34
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 28
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 31
+    },
+    {
+      "date": "Jan 2024",
+      "interest": 30
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 31
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 29
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 26
+    },
+    {
+      "date": "May 2024",
+      "interest": 26
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 25
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 29
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 26
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 29
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 24
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 26
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 27
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 26
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 27
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 26
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 24
+    },
+    {
+      "date": "May 2025",
+      "interest": 23
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 25
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 26
+    },
+    {
       "date": "Aug 2025",
-      "interest": 43
+      "interest": 25
     },
     {
       "date": "Sep 2025",
-      "interest": 41
+      "interest": 24
     },
     {
       "date": "Oct 2025",
-      "interest": 43
+      "interest": 23
     },
     {
       "date": "Nov 2025",
-      "interest": 40
+      "interest": 30
     },
     {
       "date": "Dec 2025",
-      "interest": 43
+      "interest": 28
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 28
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 34
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 26
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 26
+    },
+    {
+      "date": "May 2026",
+      "interest": 25
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 26
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 27
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 28
     }
   ],
   "heart": [
     {
-      "date": "Jan 2024",
-      "interest": 59
-    },
-    {
-      "date": "Feb 2024",
-      "interest": 57
-    },
-    {
-      "date": "Mar 2024",
+      "date": "Aug 2022",
       "interest": 51
     },
     {
-      "date": "Apr 2024",
-      "interest": 54
-    },
-    {
-      "date": "May 2024",
-      "interest": 53
-    },
-    {
-      "date": "Jun 2024",
-      "interest": 51
-    },
-    {
-      "date": "Jul 2024",
-      "interest": 57
-    },
-    {
-      "date": "Aug 2024",
-      "interest": 52
-    },
-    {
-      "date": "Sep 2024",
-      "interest": 54
-    },
-    {
-      "date": "Oct 2024",
-      "interest": 53
-    },
-    {
-      "date": "Nov 2024",
-      "interest": 49
-    },
-    {
-      "date": "Dec 2024",
-      "interest": 49
-    },
-    {
-      "date": "Jan 2025",
-      "interest": 51
-    },
-    {
-      "date": "Feb 2025",
+      "date": "Sep 2022",
       "interest": 50
     },
     {
-      "date": "Mar 2025",
-      "interest": 50
+      "date": "Oct 2022",
+      "interest": 44
     },
     {
-      "date": "Apr 2025",
+      "date": "Nov 2022",
+      "interest": 58
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 56
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 61
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 63
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 66
+    },
+    {
+      "date": "Apr 2023",
       "interest": 48
     },
     {
+      "date": "May 2023",
+      "interest": 34
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 30
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 34
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 22
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 32
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 26
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 18
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 25
+    },
+    {
+      "date": "Jan 2024",
+      "interest": 26
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 40
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 32
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 37
+    },
+    {
+      "date": "May 2024",
+      "interest": 39
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 26
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 34
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 38
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 36
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 42
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 35
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 42
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 42
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 46
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 47
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 39
+    },
+    {
       "date": "May 2025",
-      "interest": 50
+      "interest": 40
     },
     {
       "date": "Jun 2025",
-      "interest": 47
+      "interest": 51
     },
     {
       "date": "Jul 2025",
-      "interest": 45
+      "interest": 52
     },
     {
       "date": "Aug 2025",
-      "interest": 45
+      "interest": 51
     },
     {
       "date": "Sep 2025",
-      "interest": 47
+      "interest": 42
     },
     {
       "date": "Oct 2025",
-      "interest": 49
+      "interest": 47
     },
     {
       "date": "Nov 2025",
-      "interest": 50
+      "interest": 59
     },
     {
       "date": "Dec 2025",
-      "interest": 53
+      "interest": 64
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 58
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 60
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 59
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 71
+    },
+    {
+      "date": "May 2026",
+      "interest": 49
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 44
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 48
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 48
     }
   ],
   "diabetes": [
     {
+      "date": "Aug 2022",
+      "interest": 73
+    },
+    {
+      "date": "Sep 2022",
+      "interest": 72
+    },
+    {
+      "date": "Oct 2022",
+      "interest": 70
+    },
+    {
+      "date": "Nov 2022",
+      "interest": 73
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 73
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 76
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 76
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 75
+    },
+    {
+      "date": "Apr 2023",
+      "interest": 73
+    },
+    {
+      "date": "May 2023",
+      "interest": 70
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 76
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 74
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 77
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 70
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 71
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 76
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 77
+    },
+    {
       "date": "Jan 2024",
-      "interest": 67
+      "interest": 80
     },
     {
       "date": "Feb 2024",
-      "interest": 70
+      "interest": 78
     },
     {
       "date": "Mar 2024",
-      "interest": 70
+      "interest": 73
     },
     {
       "date": "Apr 2024",
-      "interest": 66
+      "interest": 74
     },
     {
       "date": "May 2024",
-      "interest": 64
+      "interest": 68
     },
     {
       "date": "Jun 2024",
-      "interest": 66
+      "interest": 64
     },
     {
       "date": "Jul 2024",
-      "interest": 66
+      "interest": 67
     },
     {
       "date": "Aug 2024",
@@ -230,125 +498,225 @@
     },
     {
       "date": "Sep 2024",
-      "interest": 66
+      "interest": 69
     },
     {
       "date": "Oct 2024",
-      "interest": 68
+      "interest": 72
     },
     {
       "date": "Nov 2024",
-      "interest": 66
+      "interest": 75
     },
     {
       "date": "Dec 2024",
-      "interest": 64
+      "interest": 71
     },
     {
       "date": "Jan 2025",
-      "interest": 65
+      "interest": 78
     },
     {
       "date": "Feb 2025",
-      "interest": 66
+      "interest": 78
     },
     {
       "date": "Mar 2025",
-      "interest": 68
+      "interest": 75
     },
     {
       "date": "Apr 2025",
-      "interest": 65
+      "interest": 75
     },
     {
       "date": "May 2025",
-      "interest": 66
+      "interest": 72
     },
     {
       "date": "Jun 2025",
-      "interest": 68
+      "interest": 73
     },
     {
       "date": "Jul 2025",
-      "interest": 66
+      "interest": 72
     },
     {
       "date": "Aug 2025",
-      "interest": 70
+      "interest": 74
     },
     {
       "date": "Sep 2025",
-      "interest": 67
+      "interest": 70
     },
     {
       "date": "Oct 2025",
-      "interest": 65
+      "interest": 72
     },
     {
       "date": "Nov 2025",
-      "interest": 66
+      "interest": 86
     },
     {
       "date": "Dec 2025",
-      "interest": 68
+      "interest": 83
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 86
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 94
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 84
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 86
+    },
+    {
+      "date": "May 2026",
+      "interest": 78
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 81
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 85
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 87
     }
   ],
   "obesity": [
     {
-      "date": "Jan 2024",
+      "date": "Aug 2022",
+      "interest": 55
+    },
+    {
+      "date": "Sep 2022",
+      "interest": 56
+    },
+    {
+      "date": "Oct 2022",
+      "interest": 52
+    },
+    {
+      "date": "Nov 2022",
+      "interest": 52
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 52
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 53
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 58
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 58
+    },
+    {
+      "date": "Apr 2023",
       "interest": 54
+    },
+    {
+      "date": "May 2023",
+      "interest": 55
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 60
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 54
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 49
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 49
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 46
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 45
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 48
+    },
+    {
+      "date": "Jan 2024",
+      "interest": 48
     },
     {
       "date": "Feb 2024",
-      "interest": 54
+      "interest": 53
     },
     {
       "date": "Mar 2024",
-      "interest": 53
+      "interest": 57
     },
     {
       "date": "Apr 2024",
-      "interest": 54
+      "interest": 52
     },
     {
       "date": "May 2024",
-      "interest": 56
+      "interest": 52
     },
     {
       "date": "Jun 2024",
-      "interest": 56
+      "interest": 48
     },
     {
       "date": "Jul 2024",
-      "interest": 54
-    },
-    {
-      "date": "Aug 2024",
       "interest": 53
     },
     {
+      "date": "Aug 2024",
+      "interest": 46
+    },
+    {
       "date": "Sep 2024",
-      "interest": 54
+      "interest": 47
     },
     {
       "date": "Oct 2024",
-      "interest": 51
+      "interest": 44
     },
     {
       "date": "Nov 2024",
-      "interest": 56
+      "interest": 50
     },
     {
       "date": "Dec 2024",
-      "interest": 58
+      "interest": 47
     },
     {
       "date": "Jan 2025",
-      "interest": 58
+      "interest": 52
     },
     {
       "date": "Feb 2025",
-      "interest": 55
+      "interest": 60
     },
     {
       "date": "Mar 2025",
@@ -356,77 +724,177 @@
     },
     {
       "date": "Apr 2025",
-      "interest": 60
+      "interest": 52
     },
     {
       "date": "May 2025",
-      "interest": 55
+      "interest": 50
     },
     {
       "date": "Jun 2025",
-      "interest": 58
+      "interest": 55
     },
     {
       "date": "Jul 2025",
-      "interest": 57
+      "interest": 54
     },
     {
       "date": "Aug 2025",
-      "interest": 58
+      "interest": 52
     },
     {
       "date": "Sep 2025",
-      "interest": 61
+      "interest": 50
     },
     {
       "date": "Oct 2025",
-      "interest": 59
+      "interest": 48
     },
     {
       "date": "Nov 2025",
-      "interest": 60
+      "interest": 70
     },
     {
       "date": "Dec 2025",
+      "interest": 64
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 65
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 77
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 75
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 69
+    },
+    {
+      "date": "May 2026",
+      "interest": 68
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 68
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 65
+    },
+    {
+      "date": "Aug 2026",
       "interest": 63
     }
   ],
   "depression": [
     {
+      "date": "Aug 2022",
+      "interest": 79
+    },
+    {
+      "date": "Sep 2022",
+      "interest": 79
+    },
+    {
+      "date": "Oct 2022",
+      "interest": 81
+    },
+    {
+      "date": "Nov 2022",
+      "interest": 88
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 86
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 90
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 91
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 88
+    },
+    {
+      "date": "Apr 2023",
+      "interest": 74
+    },
+    {
+      "date": "May 2023",
+      "interest": 70
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 70
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 72
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 68
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 69
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 68
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 68
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 72
+    },
+    {
       "date": "Jan 2024",
-      "interest": 47
+      "interest": 71
     },
     {
       "date": "Feb 2024",
-      "interest": 53
+      "interest": 68
     },
     {
       "date": "Mar 2024",
-      "interest": 50
+      "interest": 67
     },
     {
       "date": "Apr 2024",
-      "interest": 53
+      "interest": 59
     },
     {
       "date": "May 2024",
-      "interest": 54
+      "interest": 52
     },
     {
       "date": "Jun 2024",
-      "interest": 54
-    },
-    {
-      "date": "Jul 2024",
       "interest": 49
     },
     {
+      "date": "Jul 2024",
+      "interest": 54
+    },
+    {
       "date": "Aug 2024",
-      "interest": 48
+      "interest": 52
     },
     {
       "date": "Sep 2024",
-      "interest": 51
+      "interest": 54
     },
     {
       "date": "Oct 2024",
@@ -434,85 +902,581 @@
     },
     {
       "date": "Nov 2024",
-      "interest": 57
+      "interest": 55
     },
     {
       "date": "Dec 2024",
-      "interest": 58
+      "interest": 52
     },
     {
       "date": "Jan 2025",
-      "interest": 58
+      "interest": 55
     },
     {
       "date": "Feb 2025",
-      "interest": 56
+      "interest": 52
     },
     {
       "date": "Mar 2025",
-      "interest": 52
+      "interest": 49
     },
     {
       "date": "Apr 2025",
-      "interest": 59
+      "interest": 47
     },
     {
       "date": "May 2025",
-      "interest": 55
+      "interest": 44
     },
     {
       "date": "Jun 2025",
-      "interest": 56
+      "interest": 46
     },
     {
       "date": "Jul 2025",
-      "interest": 57
+      "interest": 46
     },
     {
       "date": "Aug 2025",
-      "interest": 52
+      "interest": 44
     },
     {
       "date": "Sep 2025",
-      "interest": 55
+      "interest": 39
     },
     {
       "date": "Oct 2025",
-      "interest": 52
+      "interest": 44
     },
     {
       "date": "Nov 2025",
-      "interest": 48
+      "interest": 50
     },
     {
       "date": "Dec 2025",
+      "interest": 52
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 50
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 60
+    },
+    {
+      "date": "Mar 2026",
       "interest": 53
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 53
+    },
+    {
+      "date": "May 2026",
+      "interest": 49
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 50
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 50
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 55
     }
   ],
   "tb": [
     {
+      "date": "Aug 2022",
+      "interest": 51
+    },
+    {
+      "date": "Sep 2022",
+      "interest": 53
+    },
+    {
+      "date": "Oct 2022",
+      "interest": 48
+    },
+    {
+      "date": "Nov 2022",
+      "interest": 52
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 53
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 51
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 57
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 68
+    },
+    {
+      "date": "Apr 2023",
+      "interest": 53
+    },
+    {
+      "date": "May 2023",
+      "interest": 51
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 53
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 55
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 53
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 52
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 52
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 54
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 50
+    },
+    {
       "date": "Jan 2024",
-      "interest": 47
+      "interest": 50
     },
     {
       "date": "Feb 2024",
-      "interest": 45
+      "interest": 53
     },
     {
       "date": "Mar 2024",
-      "interest": 45
+      "interest": 56
     },
     {
       "date": "Apr 2024",
-      "interest": 46
+      "interest": 51
     },
     {
       "date": "May 2024",
-      "interest": 46
+      "interest": 51
     },
     {
       "date": "Jun 2024",
-      "interest": 42
+      "interest": 50
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 51
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 50
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 56
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 53
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 54
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 51
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 56
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 58
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 65
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 54
+    },
+    {
+      "date": "May 2025",
+      "interest": 52
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 54
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 56
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 54
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 51
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 47
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 56
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 52
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 58
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 62
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 65
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 58
+    },
+    {
+      "date": "May 2026",
+      "interest": 55
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 56
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 61
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 63
+    }
+  ],
+  "baldness": [
+    {
+      "date": "Aug 2022",
+      "interest": 79
+    },
+    {
+      "date": "Sep 2022",
+      "interest": 74
+    },
+    {
+      "date": "Oct 2022",
+      "interest": 75
+    },
+    {
+      "date": "Nov 2022",
+      "interest": 85
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 78
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 73
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 67
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 65
+    },
+    {
+      "date": "Apr 2023",
+      "interest": 63
+    },
+    {
+      "date": "May 2023",
+      "interest": 70
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 86
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 90
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 89
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 85
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 81
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 88
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 91
+    },
+    {
+      "date": "Jan 2024",
+      "interest": 78
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 66
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 58
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 56
+    },
+    {
+      "date": "May 2024",
+      "interest": 62
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 67
+    },
+    {
+      "date": "Jul 2024",
+      "interest": 83
+    },
+    {
+      "date": "Aug 2024",
+      "interest": 79
+    },
+    {
+      "date": "Sep 2024",
+      "interest": 78
+    },
+    {
+      "date": "Oct 2024",
+      "interest": 75
+    },
+    {
+      "date": "Nov 2024",
+      "interest": 64
+    },
+    {
+      "date": "Dec 2024",
+      "interest": 38
+    },
+    {
+      "date": "Jan 2025",
+      "interest": 32
+    },
+    {
+      "date": "Feb 2025",
+      "interest": 28
+    },
+    {
+      "date": "Mar 2025",
+      "interest": 24
+    },
+    {
+      "date": "Apr 2025",
+      "interest": 25
+    },
+    {
+      "date": "May 2025",
+      "interest": 24
+    },
+    {
+      "date": "Jun 2025",
+      "interest": 29
+    },
+    {
+      "date": "Jul 2025",
+      "interest": 33
+    },
+    {
+      "date": "Aug 2025",
+      "interest": 31
+    },
+    {
+      "date": "Sep 2025",
+      "interest": 26
+    },
+    {
+      "date": "Oct 2025",
+      "interest": 28
+    },
+    {
+      "date": "Nov 2025",
+      "interest": 38
+    },
+    {
+      "date": "Dec 2025",
+      "interest": 37
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 32
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 33
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 31
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 29
+    },
+    {
+      "date": "May 2026",
+      "interest": 30
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 34
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 36
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 38
+    }
+  ],
+  "dengue": [
+    {
+      "date": "Aug 2022",
+      "interest": 31
+    },
+    {
+      "date": "Sep 2022",
+      "interest": 48
+    },
+    {
+      "date": "Oct 2022",
+      "interest": 72
+    },
+    {
+      "date": "Nov 2022",
+      "interest": 51
+    },
+    {
+      "date": "Dec 2022",
+      "interest": 18
+    },
+    {
+      "date": "Jan 2023",
+      "interest": 12
+    },
+    {
+      "date": "Feb 2023",
+      "interest": 11
+    },
+    {
+      "date": "Mar 2023",
+      "interest": 10
+    },
+    {
+      "date": "Apr 2023",
+      "interest": 10
+    },
+    {
+      "date": "May 2023",
+      "interest": 10
+    },
+    {
+      "date": "Jun 2023",
+      "interest": 14
+    },
+    {
+      "date": "Jul 2023",
+      "interest": 27
+    },
+    {
+      "date": "Aug 2023",
+      "interest": 60
+    },
+    {
+      "date": "Sep 2023",
+      "interest": 86
+    },
+    {
+      "date": "Oct 2023",
+      "interest": 85
+    },
+    {
+      "date": "Nov 2023",
+      "interest": 41
+    },
+    {
+      "date": "Dec 2023",
+      "interest": 18
+    },
+    {
+      "date": "Jan 2024",
+      "interest": 12
+    },
+    {
+      "date": "Feb 2024",
+      "interest": 11
+    },
+    {
+      "date": "Mar 2024",
+      "interest": 10
+    },
+    {
+      "date": "Apr 2024",
+      "interest": 10
+    },
+    {
+      "date": "May 2024",
+      "interest": 12
+    },
+    {
+      "date": "Jun 2024",
+      "interest": 20
     },
     {
       "date": "Jul 2024",
@@ -520,219 +1484,23 @@
     },
     {
       "date": "Aug 2024",
-      "interest": 44
+      "interest": 48
     },
     {
       "date": "Sep 2024",
-      "interest": 45
-    },
-    {
-      "date": "Oct 2024",
-      "interest": 48
-    },
-    {
-      "date": "Nov 2024",
-      "interest": 51
-    },
-    {
-      "date": "Dec 2024",
       "interest": 52
     },
     {
-      "date": "Jan 2025",
-      "interest": 50
-    },
-    {
-      "date": "Feb 2025",
-      "interest": 50
-    },
-    {
-      "date": "Mar 2025",
-      "interest": 51
-    },
-    {
-      "date": "Apr 2025",
-      "interest": 49
-    },
-    {
-      "date": "May 2025",
-      "interest": 51
-    },
-    {
-      "date": "Jun 2025",
-      "interest": 53
-    },
-    {
-      "date": "Jul 2025",
-      "interest": 54
-    },
-    {
-      "date": "Aug 2025",
-      "interest": 56
-    },
-    {
-      "date": "Sep 2025",
-      "interest": 60
-    },
-    {
-      "date": "Oct 2025",
-      "interest": 54
-    },
-    {
-      "date": "Nov 2025",
-      "interest": 54
-    },
-    {
-      "date": "Dec 2025",
-      "interest": 55
-    }
-  ],
-  "baldness": [
-    {
-      "date": "Jan 2024",
-      "interest": 51
-    },
-    {
-      "date": "Feb 2024",
-      "interest": 50
-    },
-    {
-      "date": "Mar 2024",
-      "interest": 52
-    },
-    {
-      "date": "Apr 2024",
-      "interest": 54
-    },
-    {
-      "date": "May 2024",
-      "interest": 47
-    },
-    {
-      "date": "Jun 2024",
-      "interest": 49
-    },
-    {
-      "date": "Jul 2024",
-      "interest": 62
-    },
-    {
-      "date": "Aug 2024",
-      "interest": 64
-    },
-    {
-      "date": "Sep 2024",
-      "interest": 63
-    },
-    {
       "date": "Oct 2024",
-      "interest": 55
+      "interest": 49
     },
     {
       "date": "Nov 2024",
-      "interest": 56
+      "interest": 34
     },
     {
       "date": "Dec 2024",
-      "interest": 48
-    },
-    {
-      "date": "Jan 2025",
-      "interest": 50
-    },
-    {
-      "date": "Feb 2025",
-      "interest": 53
-    },
-    {
-      "date": "Mar 2025",
-      "interest": 49
-    },
-    {
-      "date": "Apr 2025",
-      "interest": 54
-    },
-    {
-      "date": "May 2025",
-      "interest": 54
-    },
-    {
-      "date": "Jun 2025",
-      "interest": 55
-    },
-    {
-      "date": "Jul 2025",
-      "interest": 71
-    },
-    {
-      "date": "Aug 2025",
-      "interest": 62
-    },
-    {
-      "date": "Sep 2025",
-      "interest": 68
-    },
-    {
-      "date": "Oct 2025",
-      "interest": 53
-    },
-    {
-      "date": "Nov 2025",
-      "interest": 49
-    },
-    {
-      "date": "Dec 2025",
-      "interest": 48
-    }
-  ],
-  "dengue": [
-    {
-      "date": "Jan 2024",
-      "interest": 21
-    },
-    {
-      "date": "Feb 2024",
       "interest": 14
-    },
-    {
-      "date": "Mar 2024",
-      "interest": 16
-    },
-    {
-      "date": "Apr 2024",
-      "interest": 25
-    },
-    {
-      "date": "May 2024",
-      "interest": 16
-    },
-    {
-      "date": "Jun 2024",
-      "interest": 11
-    },
-    {
-      "date": "Jul 2024",
-      "interest": 58
-    },
-    {
-      "date": "Aug 2024",
-      "interest": 99
-    },
-    {
-      "date": "Sep 2024",
-      "interest": 92
-    },
-    {
-      "date": "Oct 2024",
-      "interest": 93
-    },
-    {
-      "date": "Nov 2024",
-      "interest": 51
-    },
-    {
-      "date": "Dec 2024",
-      "interest": 22
     },
     {
       "date": "Jan 2025",
@@ -740,47 +1508,79 @@
     },
     {
       "date": "Feb 2025",
-      "interest": 19
+      "interest": 9
     },
     {
       "date": "Mar 2025",
-      "interest": 11
+      "interest": 8
     },
     {
       "date": "Apr 2025",
-      "interest": 18
+      "interest": 8
     },
     {
       "date": "May 2025",
-      "interest": 17
+      "interest": 9
     },
     {
       "date": "Jun 2025",
-      "interest": 11
+      "interest": 12
     },
     {
       "date": "Jul 2025",
-      "interest": 57
+      "interest": 16
     },
     {
       "date": "Aug 2025",
-      "interest": 99
+      "interest": 20
     },
     {
       "date": "Sep 2025",
-      "interest": 94
+      "interest": 20
     },
     {
       "date": "Oct 2025",
-      "interest": 99
+      "interest": 19
     },
     {
       "date": "Nov 2025",
-      "interest": 49
+      "interest": 16
     },
     {
       "date": "Dec 2025",
-      "interest": 18
+      "interest": 9
+    },
+    {
+      "date": "Jan 2026",
+      "interest": 8
+    },
+    {
+      "date": "Feb 2026",
+      "interest": 8
+    },
+    {
+      "date": "Mar 2026",
+      "interest": 8
+    },
+    {
+      "date": "Apr 2026",
+      "interest": 8
+    },
+    {
+      "date": "May 2026",
+      "interest": 8
+    },
+    {
+      "date": "Jun 2026",
+      "interest": 10
+    },
+    {
+      "date": "Jul 2026",
+      "interest": 17
+    },
+    {
+      "date": "Aug 2026",
+      "interest": 21
     }
   ]
 }

@@ -888,6 +888,14 @@ header {
   filter: drop-shadow(0 0 6px var(--search-glow));
 }
 
+.chart-line-benchmark {
+  fill: none;
+  stroke: #94a3b8;
+  stroke-width: 1.75px;
+  stroke-dasharray: 4 4;
+  opacity: 0.7;
+}
+
 .chart-area {
   fill: url(#search-gradient);
   opacity: 0.2;
@@ -904,6 +912,15 @@ header {
 .chart-dot:hover {
   r: 7px;
   fill: #ffffff;
+}
+
+.chart-reset-btn {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.chart-reset-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 /* Scatter Plot Points */
