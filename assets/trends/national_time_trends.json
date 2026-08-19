@@ -276,7 +276,7 @@
     },
     {
       "date": "Mar 2024",
-      "interest": 32
+      "interest": 31
     },
     {
       "date": "Apr 2024",
@@ -590,7 +590,7 @@
     },
     {
       "date": "Aug 2026",
-      "interest": 87
+      "interest": 86
     }
   ],
   "obesity": [
@@ -788,7 +788,7 @@
     },
     {
       "date": "Aug 2026",
-      "interest": 63
+      "interest": 62
     }
   ],
   "depression": [
@@ -870,7 +870,7 @@
     },
     {
       "date": "Mar 2024",
-      "interest": 67
+      "interest": 66
     },
     {
       "date": "Apr 2024",
@@ -986,7 +986,7 @@
     },
     {
       "date": "Aug 2026",
-      "interest": 55
+      "interest": 56
     }
   ],
   "tb": [
@@ -1358,7 +1358,7 @@
     },
     {
       "date": "Feb 2026",
-      "interest": 33
+      "interest": 34
     },
     {
       "date": "Mar 2026",

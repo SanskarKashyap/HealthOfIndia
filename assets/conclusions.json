@@ -916,7 +916,7 @@
     "healthInterpretation": "higher = worse burden",
     "steps": {
       "1_timeTrends": {
-        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Heart Disease\" averaged 44/100. Peak interest hit 71 in Apr 2026, while the lowest was 18 in Nov 2023. The overall trend is upward (H1 avg: 40, H2 avg: 48, 22.0% change). Search volatility is moderate (σ = 12.5).",
+        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Heart Disease\" averaged 44/100. Peak interest hit 71 in Apr 2026, while the lowest was 18 in Nov 2023. The overall trend is upward (H1 avg: 40, H2 avg: 48, 22.1% change). Search volatility is moderate (σ = 12.5).",
         "metrics": {
           "average": 44.1,
           "peak": {
@@ -928,7 +928,7 @@
             "date": "Nov 2023"
           },
           "trend": "upward",
-          "h1_avg": 39.7,
+          "h1_avg": 39.6,
           "h2_avg": 48.4,
           "volatility": "moderate",
           "stdev": 12.5
@@ -1882,7 +1882,7 @@
     "healthInterpretation": "higher = worse burden",
     "steps": {
       "1_timeTrends": {
-        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Diabetes\" averaged 76/100. Peak interest hit 94 in Feb 2026, while the lowest was 64 in Jun 2024. The overall trend is upward (H1 avg: 73, H2 avg: 78, 6.3% change). Search volatility is low (σ = 6.0).",
+        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Diabetes\" averaged 75/100. Peak interest hit 94 in Feb 2026, while the lowest was 64 in Jun 2024. The overall trend is upward (H1 avg: 73, H2 avg: 78, 6.2% change). Search volatility is low (σ = 6.0).",
         "metrics": {
           "average": 75.5,
           "peak": {
@@ -1895,7 +1895,7 @@
           },
           "trend": "upward",
           "h1_avg": 73.2,
-          "h2_avg": 77.8,
+          "h2_avg": 77.7,
           "volatility": "low",
           "stdev": 6.0
         }
@@ -2848,7 +2848,7 @@
     "healthInterpretation": "higher = worse burden",
     "steps": {
       "1_timeTrends": {
-        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Obesity\" averaged 55/100. Peak interest hit 77 in Feb 2026, while the lowest was 44 in Oct 2024. The overall trend is upward (H1 avg: 52, H2 avg: 58, 10.6% change). Search volatility is low (σ = 7.9).",
+        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Obesity\" averaged 55/100. Peak interest hit 77 in Feb 2026, while the lowest was 44 in Oct 2024. The overall trend is upward (H1 avg: 52, H2 avg: 58, 10.5% change). Search volatility is low (σ = 7.9).",
         "metrics": {
           "average": 55.3,
           "peak": {
@@ -2861,7 +2861,7 @@
           },
           "trend": "upward",
           "h1_avg": 52.5,
-          "h2_avg": 58,
+          "h2_avg": 58.0,
           "volatility": "low",
           "stdev": 7.9
         }
@@ -3814,7 +3814,7 @@
     "healthInterpretation": "higher = worse distress",
     "steps": {
       "1_timeTrends": {
-        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Depression\" averaged 61/100. Peak interest hit 91 in Feb 2023, while the lowest was 39 in Sep 2025. The overall trend is downward (H1 avg: 72, H2 avg: 50, 30.4% change). Search volatility is moderate (σ = 14.1).",
+        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Depression\" averaged 61/100. Peak interest hit 91 in Feb 2023, while the lowest was 39 in Sep 2025. The overall trend is downward (H1 avg: 72, H2 avg: 50, 30.3% change). Search volatility is moderate (σ = 14.1).",
         "metrics": {
           "average": 61,
           "peak": {
@@ -3827,7 +3827,7 @@
           },
           "trend": "downward",
           "h1_avg": 72.2,
-          "h2_avg": 50.2,
+          "h2_avg": 50.3,
           "volatility": "moderate",
           "stdev": 14.1
         }
@@ -5714,9 +5714,9 @@
     "healthInterpretation": "higher = higher risk",
     "steps": {
       "1_timeTrends": {
-        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Baldness / Hair Loss\" averaged 56/100. Peak interest hit 91 in Dec 2023, while the lowest was 24 in Mar 2025. The overall trend is downward (H1 avg: 75, H2 avg: 38, 49.5% change). Search volatility is high (σ = 23.4). Summer spike pattern: Jul–Sep average (63) is 17% higher than other months (54).",
+        "summary": "Over the 49-month period (Aug 2022–Aug 2026), national search interest for \"Baldness / Hair Loss\" averaged 56/100. Peak interest hit 91 in Dec 2023, while the lowest was 24 in Mar 2025. The overall trend is downward (H1 avg: 75, H2 avg: 38, 49.4% change). Search volatility is high (σ = 23.4). Summer spike pattern: Jul–Sep average (63) is 17% higher than other months (54).",
         "metrics": {
-          "average": 56.3,
+          "average": 56.4,
           "peak": {
             "value": 91,
             "date": "Dec 2023"
