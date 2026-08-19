@@ -172,7 +172,7 @@ export function initScrollObserver(onStepChange, onProgress) {
 
 /**
  * Smoothly scrolls to a specific step index.
- * Accounts for fixed header offset so the step card is centered in view.
+ * Accounts for fixed header offset and mobile vs desktop layout.
  * @param {number} stepNum
  */
 export function scrollToStep(stepNum) {
@@ -182,14 +182,23 @@ export function scrollToStep(stepNum) {
   // Stop auto scroll if active
   stopAutoScroll();
 
-  const viewportHeight = window.innerHeight;
-  const card = targetStep.querySelector('.step-card') || targetStep;
-  const cardRect = card.getBoundingClientRect();
+  const isMobile = window.innerWidth <= 1024;
+  const headerHeight = isMobile ? 60 : 70;
   const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-
-  // Calculate target scroll position so card center is at 45% viewport height
-  const cardAbsoluteTop = currentScrollY + cardRect.top;
-  const targetScrollY = cardAbsoluteTop - (viewportHeight * 0.45 - cardRect.height / 2);
+  
+  let targetScrollY;
+  if (isMobile) {
+    // On mobile, scroll cleanly to the top of the step block (where the heatmap / visualization starts)
+    const stepRect = targetStep.getBoundingClientRect();
+    targetScrollY = currentScrollY + stepRect.top - headerHeight - 12;
+  } else {
+    // On desktop, center the step card in view
+    const card = targetStep.querySelector('.step-card') || targetStep;
+    const cardRect = card.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const cardAbsoluteTop = currentScrollY + cardRect.top;
+    targetScrollY = cardAbsoluteTop - (viewportHeight * 0.45 - cardRect.height / 2);
+  }
 
   window.scrollTo({
     top: Math.max(0, targetScrollY),

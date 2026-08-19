@@ -1,28 +1,28 @@
 // Helper Utilities for Health of India Dashboard
 
-// Curated Emerald (Search) and Royal Blue (Health) palettes
+// Curated Emerald (Search) and Royal Blue (Health) palettes (Low: Light -> High: Dark)
 export const colorPalettes = {
   search: [
-    '#042f2e', // Deepest Teal
-    '#115e59',
-    '#0f766e',
-    '#0d9488',
-    '#14b8a6',
-    '#2dd4bf', // Teal/Mint Primary (#2DD4BF)
-    '#5eead4',
+    '#ccfbf1', // Lightest Mint (Low)
     '#99f6e4',
-    '#ccfbf1'  // Lightest Mint
+    '#5eead4',
+    '#2dd4bf',
+    '#14b8a6',
+    '#0d9488',
+    '#0f766e',
+    '#115e59',
+    '#042f2e'  // Deepest Teal / Dark Green (High)
   ],
   health: [
-    '#172554', // Deepest Blue
-    '#1e3a8a',
-    '#1e40af',
-    '#1d4ed8',
-    '#2563eb',
-    '#3b82f6', // Royal Blue Primary
-    '#60a5fa',
+    '#bfdbfe', // Lightest Blue (Low)
     '#93c5fd',
-    '#bfdbfe'  // Lightest Blue
+    '#60a5fa',
+    '#3b82f6',
+    '#2563eb',
+    '#1d4ed8',
+    '#1e40af',
+    '#1e3a8a',
+    '#172554'  // Deepest Navy / Dark Blue (High)
   ]
 };
 
@@ -113,10 +113,10 @@ export const conditionConfig = {
 // Create a linear color scale generator using D3
 export function getColorScale(type, min, max) {
   const palette = colorPalettes[type];
-  // Invert colors so that darker color represents higher values
+  // Forward scale: Darker (low value) -> Luminous/Bright (high value) matching the legend
   return d3.scaleQuantize()
     .domain([min, max])
-    .range([...palette].reverse());
+    .range(palette);
 }
 
 // Key state outliers narrative and details for Step 6

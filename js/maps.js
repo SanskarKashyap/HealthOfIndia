@@ -1,23 +1,63 @@
 // Maps Module for Health of India Dashboard
-import { conditionConfig, getColorScale } from './utils.js';
+import { conditionConfig, getColorScale, colorPalettes } from './utils.js';
 
 // Setup common tooltip select
 const tooltip = d3.select("#map-tooltip");
+
+/**
+ * Calculates accurate container dimensions across mobile step slots and desktop vis panel.
+ * @param {string} containerId
+ * @returns {{ width: number, height: number, isMobile: boolean }}
+ */
+export function getContainerDimensions(containerId) {
+  const container = document.getElementById(containerId);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 1024;
+
+  if (!container) {
+    const defaultW = isMobile ? Math.min(window.innerWidth - 32, 600) : 800;
+    const defaultH = isMobile ? Math.min(Math.round(defaultW * 1.05), 440) : 600;
+    return { width: defaultW, height: defaultH, isMobile };
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  const parentSlot = container.closest('.step-vis-slot');
+  const visParent = document.getElementById("vis-container");
+
+  let w = containerRect.width;
+  if (!w && parentSlot) w = parentSlot.getBoundingClientRect().width;
+  if (!w && !isMobile && visParent) w = visParent.getBoundingClientRect().width;
+  if (!w || w <= 0) {
+    w = isMobile ? Math.min(window.innerWidth - 32, 600) : 800;
+  }
+
+  let h = containerRect.height;
+  if ((!h || h <= 0 || isMobile) && parentSlot) {
+    const slotH = parentSlot.getBoundingClientRect().height;
+    if (slotH > 100) h = slotH;
+  }
+  if ((!h || h <= 0) && !isMobile && visParent) {
+    h = visParent.getBoundingClientRect().height;
+  }
+  if (!h || h <= 0 || isMobile) {
+    h = isMobile ? Math.min(Math.max(Math.round(w * 1.05), 360), 450) : 600;
+  }
+
+  return { width: Math.round(w), height: Math.round(h), isMobile };
+}
 
 export function renderSingleMap(containerId, geojsonData, dataMap, type, field, title, onClickRegion, forcedPalette, statesGeoJSON) {
   const container = d3.select(`#${containerId}`);
   container.html(""); // Clear previous content
 
-  // Set up dimensions using parent vis-container for reliable sizing even when layer is precomputed in background
-  const visParent = document.getElementById("vis-container");
-  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
-  const width = parentRect.width || 800;
-  const height = parentRect.height || 600;
+  // Set up dimensions using responsive container helper
+  const { width, height, isMobile } = getContainerDimensions(containerId);
 
-  // Create SVG
+  // Create SVG with responsive viewBox and scaling
   const svg = container.append("svg")
-    .attr("width", width)
+    .attr("width", "100%")
     .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
     .attr("class", "india-map");
 
   // Create Map Title
@@ -39,8 +79,10 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
     projectionGeoJSON = geojsonData;
   }
 
+  const padX = isMobile ? 12 : 20;
+  const padY = isMobile ? 48 : 60;
   const projection = d3.geoMercator()
-    .fitSize([width - 20, height - 60], projectionGeoJSON);
+    .fitSize([width - padX, height - padY], projectionGeoJSON);
 
   const pathGenerator = d3.geoPath().projection(projection);
 
@@ -62,7 +104,7 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
   const colorScale = getColorScale(paletteType, minVal, maxVal);
 
   const mapGroup = svg.append("g")
-    .attr("transform", "translate(10, 30)");
+    .attr("transform", `translate(${isMobile ? 6 : 10}, ${isMobile ? 24 : 30})`);
 
   // Draw district/state features
   const paths = mapGroup.selectAll("path.region-path")
@@ -94,7 +136,7 @@ export function renderSingleMap(containerId, geojsonData, dataMap, type, field, 
       .attr("pointer-events", "none")
       .style("fill", "none")
       .style("stroke", isSearch ? "#139492ff" : "#1448c2ff")
-      .style("stroke-width", "1.5px")
+      .style("stroke-width", isMobile ? "1px" : "1.5px")
       .style("stroke-linejoin", "round")
       .style("pointer-events", "none");
   }
@@ -159,33 +201,39 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
   const isZoomed = statesGeoJSON.features.length <= 2;
   const useDistrictSearch = Boolean(districtTrends);
 
-  // Renders container as side by side grid
+  const { width: containerW, height: containerH, isMobile } = getContainerDimensions(containerId);
+
   const wrapper = container.append("div")
     .attr("class", "synced-maps-container");
 
-  const leftPanel = wrapper.append("div").attr("class", "synced-map-panel").attr("id", "synced-left");
-  const rightPanel = wrapper.append("div").attr("class", "synced-map-panel").attr("id", "synced-right");
+  const leftPanel = wrapper.append("div").attr("class", "synced-map-panel synced-map-left").attr("id", "synced-left");
+  const rightPanel = wrapper.append("div").attr("class", "synced-map-panel synced-map-right").attr("id", "synced-right");
 
-  const visParent = document.getElementById("vis-container");
-  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
-  const containerW = parentRect.width || 800;
-  const containerH = parentRect.height || 600;
-  const w = Math.max(300, (containerW / 2) - 8);
-  const h = containerH;
+  const w = isMobile ? Math.max(150, Math.floor((containerW - 8) / 2)) : Math.max(300, (containerW / 2) - 10);
+  const h = isMobile ? Math.min(Math.round(w * 1.32), 390) : containerH;
 
   const stateNameHeader = isZoomed && districtsGeoJSON.features.length > 0 ? districtsGeoJSON.features[0].properties.ST_NM : null;
   const leftTitle = isZoomed
-    ? `District Search Interest (${stateNameHeader || ''})`
-    : `District Search Interest (Google Trends)`;
+    ? `Search (${stateNameHeader || ''})`
+    : (isMobile ? `Search (Trends)` : `District Search Interest (Google Trends)`);
   const rightTitle = isZoomed
-    ? `Clinical Health Outcome (${stateNameHeader || ''})`
-    : `Clinical Health Outcome (NFHS-5)`;
+    ? `Clinical (${stateNameHeader || ''})`
+    : (isMobile ? `Clinical (NFHS-5)` : `Clinical Health Outcome (NFHS-5)`);
 
   leftPanel.append("div").attr("class", "map-title").text(leftTitle);
   rightPanel.append("div").attr("class", "map-title").text(rightTitle);
 
-  const leftSvg = leftPanel.append("svg").attr("width", w).attr("height", h);
-  const rightSvg = rightPanel.append("svg").attr("width", w).attr("height", h);
+  const leftSvg = leftPanel.append("svg")
+    .attr("width", "100%")
+    .attr("height", h)
+    .attr("viewBox", `0 0 ${w} ${h}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+
+  const rightSvg = rightPanel.append("svg")
+    .attr("width", "100%")
+    .attr("height", h)
+    .attr("viewBox", `0 0 ${w} ${h}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
 
   // ── Projections ─────────────────────────────────────────────
   let leftProjSrc, rightProjSrc;
@@ -207,8 +255,12 @@ export function renderSyncedMaps(containerId, statesGeoJSON, districtsGeoJSON, s
     rightProjSrc = rightFit.length > 0 ? { type: 'FeatureCollection', features: rightFit } : districtsGeoJSON;
   }
 
-  const leftProjection = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], leftProjSrc);
-  const rightProjection = d3.geoMercator().fitExtent([[36, 56], [w - 36, h - 64]], rightProjSrc);
+  const padX = isMobile ? 4 : 36;
+  const padTop = isMobile ? 28 : 56;
+  const padBottom = isMobile ? 32 : 64;
+
+  const leftProjection = d3.geoMercator().fitExtent([[padX, padTop], [w - padX, h - padBottom]], leftProjSrc);
+  const rightProjection = d3.geoMercator().fitExtent([[padX, padTop], [w - padX, h - padBottom]], rightProjSrc);
 
   const leftPath = d3.geoPath().projection(leftProjection);
   const rightPath = d3.geoPath().projection(rightProjection);
@@ -494,13 +546,3 @@ function drawLegend(container, paletteType, minVal, maxVal, title, unit) {
   labels.append("span").text(minLabel);
   labels.append("span").text(maxLabel);
 }
-
-// Access to palette colors matching design system
-const colorPalettes = {
-  search: [
-    '#042f2e', '#115e59', '#0f766e', '#0d9488', '#14b8a6', '#2dd4bf', '#5eead4', '#99f6e4', '#ccfbf1'
-  ],
-  health: [
-    '#172554', '#1e3a8a', '#1e40af', '#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'
-  ]
-};

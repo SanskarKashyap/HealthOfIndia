@@ -1,5 +1,6 @@
 // Charts Module for Health of India Dashboard
 import { conditionConfig } from './utils.js';
+import { getContainerDimensions } from './maps.js';
 
 export function renderLineChart(containerId, timeData, condition) {
   const container = d3.select(`#${containerId}`);
@@ -7,20 +8,26 @@ export function renderLineChart(containerId, timeData, condition) {
 
   const config = conditionConfig[condition];
   
-  // Set up dimensions using parent vis-container for reliable sizing
-  const visParent = document.getElementById("vis-container");
-  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
-  const width = parentRect.width || 800;
-  const height = parentRect.height || 600;
+  // Set up dimensions using responsive helper
+  const { width: totalW, height: totalH, isMobile } = getContainerDimensions(containerId);
+  const width = totalW;
+  const height = isMobile ? Math.min(Math.round(width * 0.75), 320) : totalH;
   
-  const margin = { top: 40, right: 30, bottom: 50, left: 60 };
+  const margin = { 
+    top: isMobile ? 32 : 40, 
+    right: isMobile ? 16 : 30, 
+    bottom: isMobile ? 36 : 50, 
+    left: isMobile ? 40 : 60 
+  };
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
-  // Create SVG
+  // Create SVG with responsive viewBox
   const svg = container.append("svg")
-    .attr("width", width)
+    .attr("width", "100%")
     .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
     .attr("class", "chart-svg");
 
   // Add gradient definition for line glow and area fill
@@ -429,10 +436,7 @@ export function renderHorizontalBarChart(containerId, items, trendsData, conditi
 
   const config = conditionConfig[condition];
   const isDistrictLevel = Boolean(stateName && stateName !== 'all');
-  const visParent = document.getElementById("vis-container");
-  const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
-  const totalWidth  = parentRect.width || 800;
-  const totalHeight = parentRect.height || 600;
+  const { width: totalWidth, height: totalHeight, isMobile } = getContainerDimensions(containerId);
 
   // Prepare & sort data
   const raw = items.map(d => {
@@ -466,20 +470,26 @@ export function renderHorizontalBarChart(containerId, items, trendsData, conditi
   const n = raw.length;
 
   // Layout
-  const margin = { top: 56, right: 36, bottom: 36, left: isDistrictLevel ? 150 : 156 };
-  const chartW  = totalWidth - margin.left - margin.right;
-  const minBarBand = 24; // Ensures clear vertical spacing between rows
-  const maxBarBand = 36; // Avoids excessively thick bars when district count is low
+  const margin = { 
+    top: isMobile ? 64 : 56, 
+    right: isMobile ? 18 : 36, 
+    bottom: isMobile ? 32 : 36, 
+    left: isMobile ? (isDistrictLevel ? 100 : 105) : (isDistrictLevel ? 150 : 156) 
+  };
+  const chartW  = Math.max(100, totalWidth - margin.left - margin.right);
+  const minBarBand = isMobile ? 22 : 24; // Ensures clear vertical spacing between rows
+  const maxBarBand = isMobile ? 32 : 36; // Avoids excessively thick bars when district count is low
   const availableH = totalHeight - margin.top - margin.bottom;
   const computedBand = Math.floor(availableH / Math.max(1, n));
   const barBand = n <= 10 ? Math.min(maxBarBand, Math.max(minBarBand, computedBand)) : Math.max(minBarBand, computedBand);
-  const barH    = Math.max(5,  Math.floor(barBand * 0.35));
+  const barH    = Math.max(4,  Math.floor(barBand * 0.35));
   const gap     = Math.max(2,  Math.floor(barBand * 0.12));
   const chartH  = barBand * n;
 
   const svg = container.append('svg')
-    .attr('width',  totalWidth)
+    .attr('width',  '100%')
     .attr('height', margin.top + chartH + margin.bottom)
+    .attr('viewBox', `0 0 ${totalWidth} ${margin.top + chartH + margin.bottom}`)
     .style('overflow', 'visible');
 
   // Title

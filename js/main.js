@@ -1,9 +1,9 @@
 // Main Bootstrapping & Coordination Module
-import { loadAllData } from './data-loader.js?v=2.8';
-import { conditionConfig } from './utils.js?v=2.8';
-import { renderSingleMap, renderSyncedMaps } from './maps.js?v=2.8';
-import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=2.8';
-import { initScrollObserver, scrollToStep, scrollToTop, toggleAutoScroll, startAutoScroll, stopAutoScroll } from './scroll-observer.js?v=2.8';
+import { loadAllData } from './data-loader.js?v=3.6';
+import { conditionConfig } from './utils.js?v=3.6';
+import { renderSingleMap, renderSyncedMaps } from './maps.js?v=3.6';
+import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=3.6';
+import { initScrollObserver, scrollToStep, scrollToTop, toggleAutoScroll, startAutoScroll, stopAutoScroll } from './scroll-observer.js?v=3.6';
 
 // --- Cookie & Local Storage Persistence Helpers ---
 export function setStoredPreference(key, value) {
@@ -155,6 +155,9 @@ function setupEventHandlers() {
     setStoredPreference('hoi_condition', state.activeCondition);
     updateNarrativeTexts();
     invalidateAndRecomputeAllLayers();
+    requestAnimationFrame(() => {
+      scrollToStep(1);
+    });
   });
 
   // State Filter Dropdown
@@ -163,6 +166,9 @@ function setupEventHandlers() {
     setStoredPreference('hoi_state', state.activeState);
     updateNarrativeTexts();
     invalidateAndRecomputeAllLayers();
+    requestAnimationFrame(() => {
+      scrollToStep(1);
+    });
   });
 
   // Logo Reset
@@ -405,7 +411,8 @@ function renderOutliersTable(outlierData, cond) {
           state.activeState = selectedState;
           setStoredPreference('hoi_state', selectedState);
           updateNarrativeTexts();
-          renderCurrentStep();
+          invalidateAndRecomputeAllLayers();
+          scrollToStep(1);
         }
       });
   } else {
@@ -500,6 +507,42 @@ function renderOutliersTable(outlierData, cond) {
 const computedLayers = new Set();
 
 /**
+ * Checks if current viewport matches mobile/stacked layout
+ * @returns {boolean}
+ */
+export function isMobileView() {
+  return typeof window !== 'undefined' && window.innerWidth <= 1024;
+}
+
+/**
+ * Mounts visualization layers to step slots on mobile or into sticky vis-container on desktop.
+ */
+export function updateLayoutForViewport() {
+  const isMobile = isMobileView();
+  const visContainer = document.getElementById("vis-container");
+
+  for (let i = 1; i <= 5; i++) {
+    let layer = document.getElementById(`vis-layer-${i}`);
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.id = `vis-layer-${i}`;
+      layer.className = `vis-step-layer vis-step-layer-${i}`;
+    }
+
+    if (isMobile) {
+      const slot = document.getElementById(`vis-slot-${i}`);
+      if (slot && layer.parentElement !== slot) {
+        slot.appendChild(layer);
+      }
+    } else {
+      if (visContainer && layer.parentElement !== visContainer) {
+        visContainer.appendChild(layer);
+      }
+    }
+  }
+}
+
+/**
  * Computes a specific step layer and injects its visualization into the DOM.
  * @param {number} stepNum
  */
@@ -507,17 +550,14 @@ export function computeLayer(stepNum) {
   if (!state.data) return;
   const cond = state.activeCondition;
   const activeSt = state.activeState;
-  const container = document.getElementById("vis-container");
-  if (!container) return;
 
-  // Ensure layer container exists
+  // Ensure layer container exists in correct parent
   let layer = document.getElementById(`vis-layer-${stepNum}`);
   if (!layer) {
-    layer = document.createElement("div");
-    layer.id = `vis-layer-${stepNum}`;
-    layer.className = `vis-step-layer vis-step-layer-${stepNum}`;
-    container.appendChild(layer);
+    updateLayoutForViewport();
+    layer = document.getElementById(`vis-layer-${stepNum}`);
   }
+  if (!layer) return;
 
   const handleStateClick = (selectedState) => {
     if (!selectedState) return;
@@ -526,6 +566,7 @@ export function computeLayer(stepNum) {
     setStoredPreference('hoi_state', selectedState);
     updateNarrativeTexts();
     invalidateAndRecomputeAllLayers();
+    scrollToStep(1);
   };
 
   switch (stepNum) {
@@ -549,7 +590,7 @@ export function computeLayer(stepNum) {
           const key = f.properties.DISTRICT;
           trendsMap.set(key, distTrends[key] !== undefined ? distTrends[key] : 0);
         });
-        renderSingleMap("vis-layer-1", stateDistGeo, trendsMap, 'district', cond, `District Search Volume: ${activeSt}`, handleStateClick, 'search');
+        renderSingleMap("vis-layer-1", stateDistGeo, trendsMap, 'district', cond, `Google Trends: District Search Interest for "${conditionConfig[cond].title}" (${activeSt})`, handleStateClick, 'search');
       }
       break;
 
@@ -567,7 +608,7 @@ export function computeLayer(stepNum) {
         state.data.districtHealth
           .filter(d => d.state === activeSt)
           .forEach(d => mappedHealth.set(d.id, d[cond]));
-        renderSingleMap("vis-layer-2", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 District Outcomes: ${activeSt}`, handleStateClick, 'health');
+        renderSingleMap("vis-layer-2", filteredDistGeo, mappedHealth, 'district', cond, `NFHS-5 Outcomes: "${conditionConfig[cond].title}" (${activeSt})`, handleStateClick, 'health');
       }
       break;
 
@@ -605,49 +646,39 @@ export function computeLayer(stepNum) {
 }
 
 /**
- * Instantly renders Step 1 on startup/filter change, and pre-renders remaining steps in background idle cycles.
+ * Instantly renders the active visible step, and progressively hydrates remaining steps across micro-tasks.
  */
 export function invalidateAndRecomputeAllLayers() {
   computedLayers.clear();
-  const container = document.getElementById("vis-container");
-  if (container) {
-    // Remove any remaining loading spinners/boxes
-    container.querySelectorAll('.loading-box, .loading').forEach(el => el.remove());
+  updateLayoutForViewport();
 
-    // Ensure all 5 container divs exist
-    for (let i = 1; i <= 5; i++) {
-      let layer = document.getElementById(`vis-layer-${i}`);
-      if (!layer) {
-        layer = document.createElement("div");
-        layer.id = `vis-layer-${i}`;
-        layer.className = `vis-step-layer vis-step-layer-${i}`;
-        container.appendChild(layer);
-      }
-    }
+  const isMobile = isMobileView();
+  const current = state.currentStep || 1;
+
+  // 1. Compute active visible layer immediately for instant responsiveness
+  computeLayer(current);
+  if (!isMobile) {
+    switchVisStep(current);
   }
 
-  // 1. Instantly compute current step (e.g. Step 1)
-  const current = state.currentStep || 1;
-  computeLayer(current);
-  switchVisStep(current);
-
-  // 2. Pre-compute remaining steps in background idle cycles (staggered ~25ms apart)
-  [1, 2, 3, 4, 5].forEach((s) => {
-    if (s !== current && !computedLayers.has(s)) {
-      setTimeout(() => {
-        if (!computedLayers.has(s)) {
-          computeLayer(s);
-        }
-      }, 25 * s);
-    }
+  // 2. Schedule remaining steps asynchronously in micro-tasks to avoid thread blocking
+  const remainingSteps = [1, 2, 3, 4, 5].filter(s => s !== current);
+  remainingSteps.forEach((step, idx) => {
+    setTimeout(() => {
+      if (!computedLayers.has(step)) {
+        computeLayer(step);
+      }
+    }, (idx + 1) * 35);
   });
 }
 
 /**
- * Instant 0ms Layer Switcher (Snap of a Finger)
+ * Instant 0ms Layer Switcher (Desktop Scrollytelling)
  * @param {number} stepNum
  */
 export function switchVisStep(stepNum) {
+  if (isMobileView()) return; // On mobile, all layers are naturally positioned in their step slots
+
   // Ensure the target layer is computed if user scrolled before background pre-compute finished
   if (!computedLayers.has(stepNum)) {
     computeLayer(stepNum);

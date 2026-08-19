@@ -627,6 +627,11 @@ header {
   fill: var(--text-primary) !important;
 }
 
+/* Step Vis Slot for Mobile (Hidden on Desktop by default) */
+.step-vis-slot {
+  display: none;
+}
+
 /* Narrative Panels */
 .narrative-panel {
   position: relative;
@@ -1169,49 +1174,366 @@ footer {
   }
 }
 
-/* Responsive Adjustments */
+/* ==========================================================================
+   Mobile-First Sequential Layout & Full-Length Experience (<= 1024px)
+   Heatmap 1 -> Text 1 -> Heatmap 2 -> Text 2 -> Heatmap 3 -> Text 3...
+   ========================================================================== */
 @media (max-width: 1024px) {
-  .scrolly-wrapper {
-    grid-template-columns: 1fr;
+  :root {
+    --header-height: 60px;
   }
-  
-  .vis-panel {
-    position: sticky;
-    top: var(--header-height);
-    height: 50vh;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
+
+  header {
+    height: var(--header-height);
+    padding: 0 16px;
   }
-  
-  .narrative-panel {
-    padding: 0 20px;
+
+  .logo {
+    font-size: 1.05rem;
+    gap: 8px;
   }
-  
-  .step {
-    min-height: auto;
-    padding: 40px 0;
+
+  .logo-icon {
+    width: 20px;
+    height: 20px;
   }
-  
+
+  .controls {
+    gap: 10px;
+  }
+
+  .select-wrapper {
+    min-width: 130px;
+    max-width: 170px;
+  }
+
+  .select-wrapper select {
+    padding: 8px 30px 8px 10px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  .select-wrapper::after {
+    right: 10px;
+    width: 10px;
+    height: 10px;
+  }
+
+  /* Hero Section */
+  .hero {
+    min-height: calc(100vh - var(--header-height));
+    padding: 100px 16px 40px 16px;
+  }
+
   .hero h1 {
-    font-size: 2.75rem;
+    font-size: clamp(2rem, 7vw, 3rem);
+    line-height: 1.18;
+    margin-bottom: 18px;
+  }
+
+  .hero p {
+    font-size: 1rem;
+    margin-bottom: 30px;
+  }
+
+  /* Floating Step Nav Rail — Hide on mobile to prevent overlapping cards */
+  .step-nav-rail {
+    display: none !important;
+  }
+
+  /* Hide Desktop Sticky Visualization Panel */
+  .vis-panel {
+    display: none !important;
+  }
+
+  /* Scrolly Wrapper: Single-column full-width flow */
+  .scrolly-container {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .scrolly-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .narrative-panel {
+    padding: 0 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Step Container: Natural block with visual followed by text card */
+  .step {
+    min-height: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    padding: 30px 0 10px 0 !important;
+    margin-bottom: 24px;
+    scroll-margin-top: calc(var(--header-height) + 16px);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .step[data-step="4"] {
+    padding-top: 30px !important;
+    justify-content: flex-start;
+  }
+
+  /* Step Visual Container (Heatmap / Chart Slot) */
+  .step-vis-slot {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    min-height: 380px;
+    max-height: 480px;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Visualization Layer inside Slot */
+  .vis-step-layer {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .vis-step-layer-4 {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: block !important;
+    min-height: 380px;
+    max-height: 460px;
+    padding: 10px 6px !important;
+  }
+
+  .vis-step-layer-5 {
+    padding: 10px 4px;
+  }
+
+  /* Mobile Map Title */
+  .map-title {
+    top: 10px;
+    left: 12px;
+    font-size: 0.76rem;
+    padding: 4px 10px;
+    max-width: calc(100% - 24px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Mobile Map Legend */
+  .legend-container {
+    bottom: 10px;
+    right: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    gap: 4px;
+  }
+
+  .legend-title {
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+  }
+
+  .legend-bar {
+    width: 110px;
+    height: 6px;
+  }
+
+  .legend-labels {
+    font-size: 0.65rem;
+  }
+
+  /* Step 3: Synced Side-by-Side 50-50 Maps */
+  .synced-maps-container {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .synced-map-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    padding: 2px !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border-color) !important;
+    background: rgba(255, 255, 255, 0.01) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .synced-map-panel svg {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  .synced-map-panel .map-title {
+    top: 6px !important;
+    left: 6px !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    padding: 2px 6px !important;
+    border-radius: 6px !important;
+    letter-spacing: 0.02em !important;
+    max-width: calc(100% - 12px) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    z-index: 5 !important;
+  }
+
+  .synced-map-panel .legend-container {
+    bottom: 6px !important;
+    right: 6px !important;
+    padding: 3px 6px !important;
+    border-radius: 6px !important;
+    gap: 2px !important;
+    z-index: 5 !important;
+  }
+
+  .synced-map-panel .legend-title {
+    font-size: 0.55rem !important;
+    margin-bottom: 0px !important;
+    font-weight: 700 !important;
+  }
+
+  .synced-map-panel .legend-bar {
+    width: 60px !important;
+    height: 4px !important;
+  }
+
+  .synced-map-panel .legend-labels {
+    font-size: 0.52rem !important;
+  }
+
+  /* Step Narrative Card */
+  .step-card {
+    padding: 22px 18px;
+    border-radius: 16px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .step-card h3 {
+    font-size: 1.45rem;
+    margin-bottom: 12px;
+  }
+
+  .step-card p {
+    font-size: 0.94rem;
+    margin-bottom: 14px;
+  }
+
+  /* Outliers Table Mobile Formatting */
+  #outliers-container {
+    max-height: 360px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .outliers-table {
+    font-size: 0.76rem;
+    min-width: 320px;
+  }
+
+  .outliers-table th, .outliers-table td {
+    padding: 8px 10px;
+  }
+
+  /* Floating Controls on Mobile */
+  .floating-controls {
+    bottom: 14px;
+    right: 14px;
+    gap: 8px;
+  }
+
+  .floating-pill-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+
+  .floating-circle-btn {
+    width: 34px;
+    height: 34px;
   }
 }
 
+/* Extra Small Phones (<= 640px) */
 @media (max-width: 640px) {
   header {
-    padding: 0 16px;
+    padding: 0 12px;
   }
+
   .logo-text {
     display: none;
   }
+
+  .select-wrapper {
+    min-width: 110px;
+    max-width: 140px;
+  }
+
+  .select-wrapper select {
+    padding: 6px 24px 6px 8px;
+    font-size: 0.74rem;
+  }
+
   .hero h1 {
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 6vw, 2.3rem);
   }
+
+  .hero p {
+    font-size: 0.9rem;
+  }
+
+  .step-vis-slot {
+    min-height: 340px;
+    max-height: 420px;
+    border-radius: 14px;
+  }
+
   .step-card {
-    padding: 20px;
+    padding: 18px 14px;
+    border-radius: 14px;
   }
-  .grid-vis {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
+
+  .step-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .step-card p {
+    font-size: 0.9rem;
+  }
+
+  footer {
+    padding: 40px 16px;
   }
 }
