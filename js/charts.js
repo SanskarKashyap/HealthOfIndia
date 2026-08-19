@@ -428,6 +428,7 @@ export function renderHorizontalBarChart(containerId, items, trendsData, conditi
   container.html('');
 
   const config = conditionConfig[condition];
+  const isDistrictLevel = Boolean(stateName && stateName !== 'all');
   const visParent = document.getElementById("vis-container");
   const parentRect = visParent ? visParent.getBoundingClientRect() : container.node().getBoundingClientRect();
   const totalWidth  = parentRect.width || 800;

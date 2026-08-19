@@ -1,9 +1,9 @@
 // Main Bootstrapping & Coordination Module
-import { loadAllData } from './data-loader.js?v=2.7';
-import { conditionConfig } from './utils.js?v=2.7';
-import { renderSingleMap, renderSyncedMaps } from './maps.js?v=2.7';
-import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=2.7';
-import { initScrollObserver, scrollToStep, scrollToTop, toggleAutoScroll, startAutoScroll, stopAutoScroll } from './scroll-observer.js?v=2.7';
+import { loadAllData } from './data-loader.js?v=2.8';
+import { conditionConfig } from './utils.js?v=2.8';
+import { renderSingleMap, renderSyncedMaps } from './maps.js?v=2.8';
+import { renderLineChart, renderHorizontalBarChart } from './charts.js?v=2.8';
+import { initScrollObserver, scrollToStep, scrollToTop, toggleAutoScroll, startAutoScroll, stopAutoScroll } from './scroll-observer.js?v=2.8';
 
 // --- Cookie & Local Storage Persistence Helpers ---
 export function setStoredPreference(key, value) {
